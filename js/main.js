@@ -95,6 +95,7 @@ function repetirCalculadora() {
     codigoDescuento = prompt("Ingrese su código de descuento o presione enter para avanzar al siguiente paso: \n \n 10OFF \n 25OFF \n 50OFF \n 2X1").toUpperCase();
     cantidadCuotas = parseInt(prompt("¿En cuántas cuotas va a financiar el pago? \n \n 1 (sin interés) \n 3 (+25%) \n 6 (+60%)"));
     informarTotal(calcularFinanciacion(calcularDescuento(calcularIVA(precioSinIVA),codigoDescuento)),calcularValorCuota(calcularFinanciacion(calcularDescuento(calcularIVA(precioSinIVA),codigoDescuento)),cantidadCuotas));
+    confirm("¿Quiere calcular otro producto más?") ? repetirCalculadora() : alert("Gracias por operar con nosotros");
 }
 
 //PARA VERIFICAR DATOS POR SEPARADO EN LA CONSOLA
