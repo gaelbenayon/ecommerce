@@ -92,15 +92,14 @@ function informarPrecioFinal(precio,descuento,precioCuota) {
     }
 }
 
-let precioConIVA = calcularPrecioConIVA();
-let valorDescuento = calcularDescuento(precioConIVA);
-let precioConDescuento = calcularPrecioConDescuento(valorDescuento);
-let cantidadCuotas = parseInt(prompt("¿En cuántas cuotas va a financiar el pago? \n \n 1 (sin interés) \n 3 (+25%) \n 6 (+60%)"));
-let precioFinanciado = calcularFinanciacion(precioConDescuento,cantidadCuotas);
-let valorPorCuota = calcularValorCuota(precioFinanciado,cantidadCuotas);
-let precioFinal = informarPrecioFinal(precioFinanciado,valorDescuento,valorPorCuota);
-
 for (i=1; i <= cantidadPrecios; i++) {
+    precioConIVA = calcularPrecioConIVA();
+    valorDescuento = calcularDescuento(precioConIVA);
+    precioConDescuento = calcularPrecioConDescuento(valorDescuento);
+    cantidadCuotas = parseInt(prompt("¿En cuántas cuotas va a financiar el pago? \n \n 1 (sin interés) \n 3 (+25%) \n 6 (+60%)"));
+    precioFinanciado = calcularFinanciacion(precioConDescuento,cantidadCuotas);
+    valorPorCuota = calcularValorCuota(precioFinanciado,cantidadCuotas);
+    precioFinal = informarPrecioFinal(precioFinanciado,valorDescuento,valorPorCuota);
     if (i === cantidadPrecios) {
         let agregarProducto = confirm("¿Quiere agregar otro producto?");
         if (agregarProducto) {
