@@ -8,7 +8,7 @@ while (isNaN(cantidadPrecios) || cantidadPrecios <= 0) {
 } 
 
 function calcularPrecioConIVA() {
-    let precioSinIVA = prompt("Ingrese el valor del producto sin IVA:");
+    let precioSinIVA = parseFloat(prompt("Ingrese el valor del producto sin IVA:"));
     if (isNaN(precioSinIVA) || precioSinIVA <= 0) {
         alert("Ingrese un valor mayor a $0");
         return calcularPrecioConIVA();
