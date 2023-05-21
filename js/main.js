@@ -92,7 +92,15 @@ function informarPrecioFinal(precio,descuento,precioCuota) {
     }
 }
 
-for (i=1; i <= cantidadPrecios; i++) {
+let precioConIVA;
+let valorDescuento;
+let precioConDescuento;
+let cantidadCuotas;
+let precioFinanciado;
+let valorPorCuota;
+let precioFinal;
+
+for (let i = 1; i <= cantidadPrecios; i++) {
     precioConIVA = calcularPrecioConIVA();
     valorDescuento = calcularDescuento(precioConIVA);
     precioConDescuento = calcularPrecioConDescuento(valorDescuento);
