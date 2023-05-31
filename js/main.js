@@ -1,7 +1,5 @@
 //COMENZANDO EL ARMADO DEL ECCOMERCE
 
-let usuario = prompt("¡Bienvenido/a a nuestro E-COMMERCE!\n\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
-
 const productos = [];
 
 class Producto {
@@ -20,12 +18,19 @@ class Producto {
         productos.splice(this,1);
     }
     mostrarDisponibilidad() {
+        let disponibilidad;
         console.log(`Quedan ${this.cantidad} ${this.nombre}`);
         if (this.cantidad > 0) {
-            console.log(`Disponibilidad: SÍ`);
+            console.log(`Disponibilidad: ${disponibilidad = true}`);
         } else {
-            console.log(`Disponibilidad: NO`);
+            console.log(`Disponibilidad: ${disponibilidad = false}`);
         }
+        return disponibilidad;
+    }
+    agregarStock() {
+        let stockParaAgregar = parseInt(prompt("¿Cuántas unidades va a agregar?"));
+        this.cantidad += stockParaAgregar;
+        return this.cantidad;
     }
 }
 
@@ -39,36 +44,93 @@ productos.forEach(producto => {
     producto.mostrarEnConsola();
 });
 
-function elegirProducto() {
-    productosDisponibles = productos.filter(e => e.cantidad > 0);
+// function elegirProducto() {
+//     let productosDisponibles = productos.filter(e => e.cantidad > 0);
+//     let salida = "\n";
+//     for(let producto of productosDisponibles) {
+//         salida += "#" + producto.id + " - " + producto.nombre + "\n";
+//     }
+//     if (productosDisponibles.length === 0) {
+//         salida += "No hay productos disponibles...\n";
+//     }
+//     let productoElegido = prompt(`Elija un producto ingresando el número\n ${salida} \nEscriba volver para ir al menú`).toUpperCase();
+//     if (productoElegido == "VOLVER") {
+//         usuario = prompt("Ingrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
+//         return validarUsuario();
+//     }
+//     return enlazarProducto(parseInt(productoElegido));
+// }
+
+function elegirProductoParaComprar() {
+    let productosDisponibles = productos.filter(e => e.cantidad > 0);
     let salida = "\n";
-    for(producto of productosDisponibles) {
+    for(let producto of productosDisponibles) {
         salida += "#" + producto.id + " - " + producto.nombre + "\n";
     }
     if (productosDisponibles.length === 0) {
         salida += "No hay productos disponibles...\n";
-    }
-    let productoElegido = prompt(`Elija un producto ingresando el número\n ${salida} \nEscriba volver para ir al menú`).toUpperCase();
-    if (productoElegido == "VOLVER") {
-        usuario = prompt("Ingrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
+        alert(salida);
         return validarUsuario();
     }
-    return enlazarProducto(parseInt(productoElegido));
+    alert(`Elija un producto ingresando el número de ID a continuación\n ${salida}`);
 }
 
-function enlazarProducto(producto) {
-    let seleccion = productos.find(e => e.id === producto);
+// function enlazarProducto(producto) {
+//     let seleccion = productos.find(e => e.id === producto);
+//     if(seleccion) {
+//         seleccion = productos.indexOf(seleccion);
+//         if(productos[seleccion].cantidad > 0) {
+//             productos[seleccion].cantidad--;
+//             productos[seleccion].mostrarDisponibilidad();
+//             alert(`Llevarás un(a) ${productos[seleccion].nombre} por $${productos[seleccion].precio}`);
+//         } else {
+//             alert(`Lo sentimos, actualmente no tenemos stock de ${productos[seleccion].nombre}`);
+//         }
+//     } else {
+//         alert("Introduzca un producto válido");
+//     }
+// }
+
+function enlazarProducto() {
+    let metodoDeIdentificacion = prompt("1 - ID del producto\n2 - Nombre del producto").toUpperCase();
+    switch (metodoDeIdentificacion) {
+        case "1":
+            return enlazarPorID();
+            break;
+        case "2":
+            return enlazarPorNombre();
+            break;
+        default:
+            alert("Introduzca una opción válida.");
+            return enlazarProducto();
+            break;
+    }
+}
+
+function enlazarPorID(){
+    let idParaEnlazar = parseInt(prompt("Ingrese el número de ID del producto"));
+    let seleccion = productos.find(e => e.id === idParaEnlazar);
     if(seleccion) {
-        seleccion = productos.indexOf(seleccion);
-        if(productos[seleccion].cantidad > 0) {
-            productos[seleccion].cantidad--;
-            productos[seleccion].mostrarDisponibilidad();
-            alert(`Llevarás un(a) ${productos[seleccion].nombre} por $${productos[seleccion].precio}`);
-        } else {
-            alert(`Lo sentimos, actualmente no tenemos stock de ${productos[seleccion].nombre}`);
-        }
+        return seleccion = productos.indexOf(seleccion);
     } else {
         alert("Introduzca un producto válido");
+        return enlazarPorID();
+    }
+}
+
+function enlazarPorNombre() {
+    let nombreProducto = prompt("Ingrese el nombre del producto");
+    let coincidenciasNombre = productos.filter(e => e.nombre.toUpperCase() === nombreProducto.toUpperCase());
+    if (coincidenciasNombre.length === 0) {
+        alert("No hubo coincidencias encontradas, por favor intente nuevamente con otro nombre.");
+        return enlazarPorNombre();
+    } else {
+        let salida = "\n";
+        for (producto of coincidenciasNombre) {
+            salida += "#" + producto.id + " - " + producto.nombre + " $" + producto.precio + " (" + producto.cantidad + " unidades disponibles)\n";
+        }
+        alert(`Hay ${coincidenciasNombre.length} coincidencias de productos con ese nombre, elija una con el número de ID e ingréselo a continuación\n ${salida}`);
+        return enlazarPorID();
     }
 }
 
@@ -114,55 +176,49 @@ function agregarStockProductoPorID() {
     return usuarioAdministrador();
 }
 
-function eliminarProductoPorID() {
-    let idProductoParaEliminar = parseInt(prompt("Ingrese el ID"));
-    let paraBorrar = productos.indexOf(productos.find(e => e.id === idProductoParaEliminar));
-    if (paraBorrar < 0) {
-        alert("No se encontró el producto");
-        return
-    }
-    let decisionBorrado = confirm(`Se eliminará ${productos[paraBorrar].nombre}, acepte para continuar o cancele para mantener el producto.`);
-    if (decisionBorrado) {
-        productos[paraBorrar].disponible = false;
-        productos[paraBorrar].cantidad = 0;
-    }
-    console.log(productos);
-    return validarUsuario();
-}
+// function eliminarProductoPorID() {
+//     let idProductoParaEliminar = parseInt(prompt("Ingrese el ID"));
+//     let paraBorrar = productos.indexOf(productos.find(e => e.id === idProductoParaEliminar));
+//     if (paraBorrar < 0) {
+//         alert("No se encontró el producto");
+//         return
+//     }
+//     let decisionBorrado = confirm(`Se eliminará ${productos[paraBorrar].nombre}, acepte para continuar o cancele para mantener el producto.`);
+//     if (decisionBorrado) {
+//         productos[paraBorrar].disponible = false;
+//         productos[paraBorrar].cantidad = 0;
+//     }
+//     console.log(productos);
+//     return validarUsuario();
+// }
 
-function eliminarProductoPorNombre() {
-    let nombreProductoParaEliminar = prompt("Ingrese el nombre");
-    let coincidenciasNombre = productos.filter(e => e.nombre.toUpperCase() === nombreProductoParaEliminar.toUpperCase());
-    let salida = "\n";
-    for (producto of coincidenciasNombre) {
-        salida += "#" + producto.id + " - " + producto.nombre + " $" + producto.precio + " (" + producto.cantidad + " unidades disponibles)\n";
-    }
+// function eliminarProductoPorNombre() {
+//     let nombreProductoParaEliminar = prompt("Ingrese el nombre");
+//     let coincidenciasNombre = productos.filter(e => e.nombre.toUpperCase() === nombreProductoParaEliminar.toUpperCase());
+//     let salida = "\n";
+//     for (producto of coincidenciasNombre) {
+//         salida += "#" + producto.id + " - " + producto.nombre + " $" + producto.precio + " (" + producto.cantidad + " unidades disponibles)\n";
+//     }
 
-    alert(`Hay ${coincidenciasNombre.length} coincidencias de productos con ese nombre, elija una con el número de ID e ingréselo a continuación\n ${salida}`);
-    eliminarProductoPorID();
-}
+//     alert(`Hay ${coincidenciasNombre.length} coincidencias de productos con ese nombre, elija una con el número de ID e ingréselo a continuación\n ${salida}`);
+//     eliminarProductoPorID();
+// }
 
 function eliminarProducto() {
-    let productoParaEliminar = prompt("1 - Eliminar mediante número de ID\n2 - Eliminar mediante nombre del producto\n\nEscriba volver para ir al menú").toUpperCase();
-    switch (productoParaEliminar) {
-        case "1":
-            return eliminarProductoPorID();
-            break;
-        case "2": 
-            return eliminarProductoPorNombre();
-            break;
-        case "VOLVER":
-            return validarUsuario();
-            break;
-        default:
-            alert("Introduzca una opción válida.");
-            return eliminarProducto();
-            break;
+    let productoParaEliminar = enlazarProducto();
+    let chequeo = confirm(`El producto a eliminar es #${productos[productoParaEliminar].id} - ${productos[productoParaEliminar].nombre} | ${productos[productoParaEliminar].precio}`);
+    if (chequeo) {
+        productos.splice(productoParaEliminar,1);
+        console.log(productos);
+    } else {
+        alert("La operación ha sido cancelada.");
+        return eliminarProducto();
     }
+    return usuarioAdministrador();
 }
 
-
 function validarUsuario() {
+    let usuario = prompt("¡Bienvenido/a a nuestro E-COMMERCE!\n\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
     switch (usuario) {
         case "A":
             return usuarioAdministrador();
@@ -172,7 +228,6 @@ function validarUsuario() {
                 break;
                 default:
                     alert("Introduzca una opción válida.");
-                    usuario = prompt("¡Bienvenido/a!\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
                     return validarUsuario();
                     break;
                 }
@@ -181,9 +236,23 @@ function validarUsuario() {
 validarUsuario();
 
 function usuarioCliente() {
-    productoElegido = elegirProducto();
-    usuarioCliente();
-
+    elegirProductoParaComprar();
+    let producto = enlazarPorID();
+    if (productos[producto].cantidad > 0) {
+        let chequeo = confirm(`Llevarás 1 ${productos[producto].nombre} - $${productos[producto].precio}`);
+        if (chequeo) {
+            productos[producto].mostrarDisponibilidad();
+            productos[producto].cantidad--;
+            console.log(productos);
+            return usuarioCliente();
+        } else {
+            alert("Cancelaste la operación.");
+            return usuarioCliente();
+        }
+    } else {
+        alert("El producto no se encuentra en stock.");
+        return elegirProductoParaComprar();
+    }
 }
 
 function usuarioAdministrador() {
@@ -198,7 +267,6 @@ function usuarioAdministrador() {
                     return eliminarProducto();
                     break;
                 case "VOLVER":
-                    usuario = prompt("Ingrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
                     return validarUsuario();
                     break;
                 default:
