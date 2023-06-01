@@ -40,8 +40,8 @@ class Producto {
 }
 
 const budinVainilla = new Producto("budines","budín de vainilla",1500);
-const budinChocolate = new Producto("budines","budín de chocolate",1600);
-const budinBanana = new Producto("budines","budín de banana",1700);
+const budinChocolate = new Producto("budines","budín de chocolate",1700);
+const budinBanana = new Producto("budines","budín de banana",1600);
 
 console.log(productos);
 console.log(`Hay ${productos.length} productos cargados en el array`);
@@ -53,7 +53,7 @@ function elegirProductoParaComprar() {
     let productosDisponibles = productos.filter(e => e.cantidad > 0);
     let salida = "\n";
     for(let producto of productosDisponibles) {
-        salida += "#" + producto.id + " - " + producto.nombre + "\n";
+        salida += "#" + producto.id + " - " + producto.nombre + " | $" + producto.precio + "\n";
     }
     if (productosDisponibles.length === 0) {
         salida += "No hay productos disponibles...\n";
@@ -121,9 +121,8 @@ function agregarNuevoProducto() {
         alert("El precio debe ser mayor a $0");
         return agregarNuevoProducto();
     }
-    new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto);
-    alert(`Usted agregó el producto #${productos[productos.length-1].id} llamado ${productos[productos.length-1].nombre} por un valor de $${productos[productos.length-1].precio}`);
-    console.log(productos);
+    let nuevoProducto = new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto);
+    alert(`Usted agregó el producto #${nuevoProducto.id} llamado ${nuevoProducto.nombre} por un valor de $${nuevoProducto.precio}`);
     return usuarioAdministrador();
 }
 
@@ -173,6 +172,69 @@ function eliminarProducto() {
     return usuarioAdministrador();
 }
 
+function panelProductos() {
+    let salida = "\n";
+    for (producto of productos) {
+        salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
+    }
+    let filtroPrecios = prompt(`PANEL DE PRODUCTOS\n${salida}\nIngrese A para ordenar los productos por precio ascendete (- a +), o D por precio descendente (+ a -). Escriba volver para ir al menú principal`).toUpperCase();
+    switch (filtroPrecios) {
+        case "A":
+            let preciosAscendentes = ordenAscendentePrecios();
+            salida = "";
+            for (producto of preciosAscendentes) {
+                salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
+            }
+            alert(`Precios ordenados de menor a mayor:\n\n${salida}`);
+            return panelProductos();
+            break;
+        case "D":
+            let preciosDescendentes = ordenDescendentePrecios();
+            salida = "";
+            for (producto of preciosDescendentes) {
+                salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
+            }
+            alert(`Precios ordenados de mayor a menor:\n\n${salida}`);
+            return panelProductos();
+            break;
+        case "VOLVER":
+            return validarUsuario();
+            break;
+        default:
+            alert("Introduzca una opción válida.");
+            return panelProductos();
+            break;
+    }
+}
+
+function ordenAscendentePrecios() {
+    let preciosAscendentes = productos.slice(0,productos.length);
+    preciosAscendentes.sort((a,b) => {
+        if (a.precio > b.precio) {
+            return 1;
+        }
+        if (a.precio < b.precio) {
+            return -1;
+        }
+        return 0;
+    });
+    return preciosAscendentes;
+}
+
+function ordenDescendentePrecios() {
+    let preciosDescendentes = productos.slice(0,productos.length);
+    preciosDescendentes.sort((a,b) => {
+        if (a.precio > b.precio) {
+            return -1;
+        }
+        if (a.precio < b.precio) {
+            return 1;
+        }
+        return 0;
+    });
+    return preciosDescendentes;
+}
+
 function validarUsuario() {
     let usuario = prompt("¡Bienvenido/a a nuestro E-COMMERCE!\n\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
     switch (usuario) {
@@ -211,24 +273,26 @@ function usuarioCliente() {
 }
 
 function usuarioAdministrador() {
-    funcion = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n\nEscriba volver para ir al menú").toUpperCase();
-        switch (funcion) {
-            case "1":
-                return agregarNuevoProducto();
-                break;
-            case "2":
-                return agregarStockProducto();
-            case "3":
-                return eliminarStockProducto();
-            case "4":
-                return eliminarProducto();
-                break;
-            case "VOLVER":
-                return validarUsuario();
-                break;
-            default:
-                alert("Error, ingrese una función válida");
-                return usuarioAdministrador();
-                break;
-        }
+    funcion = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n5 - Panel de productos\n\nEscriba volver para ir al menú").toUpperCase();
+    switch (funcion) {
+        case "1":
+            return agregarNuevoProducto();
+            break;
+        case "2":
+            return agregarStockProducto();
+        case "3":
+            return eliminarStockProducto();
+        case "4":
+            return eliminarProducto();
+            break;
+        case "5":
+            return panelProductos();
+        case "VOLVER":
+            return validarUsuario();
+            break;
+        default:
+            alert("Error, ingrese una función válida");
+            return usuarioAdministrador();
+            break;
+    }
 }
