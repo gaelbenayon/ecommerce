@@ -3,12 +3,12 @@
 const productos = [];
 
 class Producto {
-    constructor(categoria,nombre,precio) {
+    constructor(categoria,nombre,precio,cantidad) {
         this.id = productos.length + 1;
         this.categoria = categoria;
         this.nombre = nombre;
         this.precio = parseFloat(precio);
-        this.cantidad = 1;
+        this.cantidad = parseInt(cantidad);
         productos.push(this);
     }
     mostrarEnConsola() {
@@ -39,9 +39,10 @@ class Producto {
     }
 }
 
-const budinVainilla = new Producto("budines","budín de vainilla",1500);
-const budinChocolate = new Producto("budines","budín de chocolate",1700);
-const budinBanana = new Producto("budines","budín de banana",1600);
+const budinVainilla = new Producto("budines","budín de vainilla",1500,3);
+const budinChocolate = new Producto("budines","budín de chocolate",1700,2);
+const budinBanana = new Producto("budines","budín de banana",1600,1);
+const chocotorta = new Producto("tortas","chocotorta",4500,1);
 
 console.log(productos);
 console.log(`Hay ${productos.length} productos cargados en el array`);
@@ -117,12 +118,13 @@ function agregarNuevoProducto() {
     let categoriaNuevoProducto = prompt("Ingrese la categoría a la que corresponde el producto");
     let nombreNuevoProducto = prompt("Escriba el nombre del nuevo producto");
     let precioNuevoProducto = parseFloat(prompt("Ingrese el precio del nuevo producto"));
+    let unidadesNuevoProducto = parseInt(prompt("Ingrese la cantidad de unidades para agregar en el stock"));
     if (precioNuevoProducto <= 0) {
         alert("El precio debe ser mayor a $0");
         return agregarNuevoProducto();
     }
-    let nuevoProducto = new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto);
-    alert(`Usted agregó el producto #${nuevoProducto.id} llamado ${nuevoProducto.nombre} por un valor de $${nuevoProducto.precio}`);
+    let nuevoProducto = new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto,unidadesNuevoProducto);
+    alert(`Usted agregó ${nuevoProducto.cantidad} unidades del producto #${nuevoProducto.id} llamado ${nuevoProducto.nombre} por un valor de $${nuevoProducto.precio}`);
     return usuarioAdministrador();
 }
 
