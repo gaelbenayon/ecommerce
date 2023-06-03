@@ -203,6 +203,7 @@ function eliminarProducto() {
     let confirmacion = confirm(`Producto seleccionado: ${productos[posicionProducto].nombre}`);
     if (confirmacion) {
         productos[posicionProducto].eliminarProducto(posicionProducto);
+        alert(`Eliminación completada`);
         return usuarioAdministrador();
     } else {
         alert("La operación ha sido cancelada.");
