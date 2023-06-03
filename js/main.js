@@ -1,6 +1,7 @@
 //COMENZANDO EL ARMADO DEL ECCOMERCE PARA EL PROYECTO FINAL
 
 const productos = [];
+const carrito = [];
 
 class Producto {
     constructor(categoria,nombre,precio,cantidad) {
@@ -9,20 +10,25 @@ class Producto {
         this.nombre = nombre;
         this.precio = parseFloat(precio);
         this.cantidad = parseInt(cantidad);
-        productos.push(this);
-    }
-    mostrarEnConsola() {
-        console.log("El precio de " + this.nombre + " es: $" + this.precio);
-    }
-    mostrarDisponibilidad() {
-        let disponibilidad;
-        console.log(`Quedan ${this.cantidad} ${this.nombre}`);
-        if (this.cantidad > 0) {
-            console.log(`Disponibilidad: ${disponibilidad = true}`);
+        if (isNaN(categoria) && isNaN(nombre) && precio > 0 && cantidad >= 0) {
+            productos.push(this);
+            console.log(`Se agregó el producto #${this.id} - ${this.nombre}`);
         } else {
-            console.log(`Disponibilidad: ${disponibilidad = false}`);
+            console.error("No se agregó el producto porque se ingresaron datos inválidos");
+            alert("Por favor, introduzca los datos de manera correcta");
         }
-        return disponibilidad;
+    }
+    mostrarInformacion() {
+        let salida = `El precio del producto #${this.id} "${this.nombre}" es $${this.precio}\nQuedan ${this.cantidad} unidades disponibles`;
+        return salida;
+    }
+    obtenerDisponibilidad() {
+        let disponibilidad;
+        if (this.cantidad > 0) {
+            return disponibilidad = true;
+        } else {
+            return disponibilidad = false;
+        }
     }
     agregarStock(cantidad) {
         return this.cantidad += cantidad;
@@ -34,34 +40,26 @@ class Producto {
             alert("No puedes eliminar más productos de los que hay cargados, verifique la disponibilidad.");
         }
     }
-    eliminarProducto() {
-        productos.splice(this,1);
+    eliminarProducto(posicion) {
+        productos.splice(posicion,1);
     }
 }
 
 const budinVainilla = new Producto("budines","budín de vainilla",1500,3);
-const budinChocolate = new Producto("budines","budín de chocolate",1700,2);
+const budinChocolate = new Producto("budines","budín de chocolate",1700,0);
 const budinBanana = new Producto("budines","budín de banana",1600,1);
 const chocotorta = new Producto("tortas","chocotorta",4500,1);
 
-console.log(productos);
-console.log(`Hay ${productos.length} productos cargados en el array`);
-productos.forEach(producto => {
-    producto.mostrarEnConsola();
-});
+function mostrarTodo(array) {
+    let salida = "";
+    for (item of array) {
+        salida += `#${item.id} "${item.nombre}" - $${item.precio} | (${item.cantidad} unidades disponibles)\n`;
+    } 
+    return salida;
+}
 
-function elegirProductoParaComprar() {
-    let productosDisponibles = productos.filter(e => e.cantidad > 0);
-    let salida = "\n";
-    for(let producto of productosDisponibles) {
-        salida += "#" + producto.id + " - " + producto.nombre + " | $" + producto.precio + "\n";
-    }
-    if (productosDisponibles.length === 0) {
-        salida += "No hay productos disponibles...\n";
-        alert(salida);
-        return validarUsuario();
-    }
-    alert(`Elija un producto ingresando el número de ID a continuación\n ${salida}`);
+function cantidadProductos() {
+    return productos.length;
 }
 
 function enlazarProducto() {
@@ -105,56 +103,95 @@ function enlazarPorNombre() {
         alert("No hubo coincidencias encontradas, por favor intente nuevamente con otro nombre.");
         return enlazarPorNombre();
     } else {
-        let salida = "\n";
-        for (producto of coincidenciasNombre) {
-            salida += "#" + producto.id + " - " + producto.nombre + " $" + producto.precio + " (" + producto.cantidad + " unidades disponibles)\n";
-        }
-        alert(`Hay ${coincidenciasNombre.length} coincidencias de productos con ese nombre, elija una con el número de ID e ingréselo a continuación\n ${salida}`);
+        alert(`Hay ${coincidenciasNombre.length} coincidencias de productos con ese nombre, elija una con el número de ID e ingréselo a continuación\n\n${mostrarTodo(coincidenciasNombre)}`);
         return enlazarPorID();
+    }
+}
+
+function usuarioAdministrador() {
+    funcion = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n5 - Panel de productos\n\nEscriba volver para ir al menú").toUpperCase();
+    switch (funcion) {
+        case "1":
+            return agregarNuevoProducto();
+            break;
+        case "2":
+            return agregarStockProducto();
+            break;
+        case "3":
+            return eliminarStockProducto();
+            break;
+        case "4":
+            return eliminarProducto();
+            break;
+        case "5":
+            return panelProductos();
+            break;
+        case "VOLVER":
+            return validarUsuario();
+            break;
+        default:
+            alert("Error, ingrese una función válida");
+            return usuarioAdministrador();
+            break;
     }
 }
 
 function agregarNuevoProducto() {
     let categoriaNuevoProducto = prompt("Ingrese la categoría a la que corresponde el producto");
+    if (!isNaN(categoriaNuevoProducto)) {
+        alert("Debe ingresar una o más palabras");
+        return agregarNuevoProducto();
+    }
     let nombreNuevoProducto = prompt("Escriba el nombre del nuevo producto");
+    if (!isNaN(nombreNuevoProducto)) {
+        alert("Debe ingresar una o más palabras");
+        return agregarNuevoProducto();
+    }
     let precioNuevoProducto = parseFloat(prompt("Ingrese el precio del nuevo producto"));
-    let unidadesNuevoProducto = parseInt(prompt("Ingrese la cantidad de unidades para agregar en el stock"));
     if (precioNuevoProducto <= 0) {
         alert("El precio debe ser mayor a $0");
         return agregarNuevoProducto();
     }
+    let unidadesNuevoProducto = parseInt(prompt("Ingrese la cantidad de unidades para agregar en el stock"));
+    if (unidadesNuevoProducto < 0) {
+        alert("La cantidad mínima de unidades es 0");
+        return agregarNuevoProducto();
+    }
     let nuevoProducto = new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto,unidadesNuevoProducto);
-    alert(`Usted agregó ${nuevoProducto.cantidad} unidades del producto #${nuevoProducto.id} llamado ${nuevoProducto.nombre} por un valor de $${nuevoProducto.precio}`);
+    alert(nuevoProducto.mostrarInformacion());
     return usuarioAdministrador();
 }
 
 function agregarStockProducto() {
-    let productoStock = enlazarProducto();
-    let confirmacion = confirm(`El producto seleccionado es #${productos[productoStock].id} - ${productos[productoStock].nombre} | ${productos[productoStock].precio}`);
+    let posicionProducto = enlazarProducto();
+    let confirmacion = confirm(`Producto seleccionado: ${productos[posicionProducto].nombre}`);
     if (confirmacion) {
-        let cantidadStock = parseInt(prompt("Ingrese la cantidad de unidades que desea agregar."));
-        if (cantidadStock < 1) {
-            alert("Debe añadir al menos 1 producto.");
-            return agregarStockProducto();
+        let cantidadStock = parseInt(prompt("¿Cuántas unidades quiere agregar al stock?"));
+        if (cantidadStock > 0) {
+            productos[posicionProducto].agregarStock(cantidadStock);
+            alert(productos[posicionProducto].mostrarInformacion());
+            return usuarioAdministrador();
         } else {
-            productos[productoStock].agregarStock(cantidadStock);
-            productos[productoStock].mostrarDisponibilidad();
-        }
+            alert("Agregue al menos 1 producto");
+            return agregarStockProducto();
+        } 
     } else {
-        alert("La operación ha sido cancelada.");
-        return eliminarProducto();
+        return agregarStockProducto();
     }
-    return usuarioAdministrador();
 }
 
 function eliminarStockProducto() {
-    let productoEliminarStock = enlazarProducto();
-    let confirmacion = confirm(`El producto seleccionado es #${productos[productoEliminarStock].id} - ${productos[productoEliminarStock].nombre} | ${productos[productoEliminarStock].precio}`);
+    let posicionProducto = enlazarProducto();
+    let confirmacion = confirm(`Producto seleccionado: ${productos[posicionProducto].nombre}`);
     if (confirmacion) {
-        let cantidadStockEliminar = parseInt(prompt("Ingrese la cantidad de unidades que desea eliminar."));
-        productos[productoEliminarStock].eliminarStock(cantidadStockEliminar);
-        productos[productoEliminarStock].mostrarDisponibilidad();
-        return usuarioAdministrador();
+        let cantidadStock = parseInt(prompt("¿Cuántas unidades quiere eliminar del stock?"));
+        if (cantidadStock <= productos[posicionProducto].cantidad) {
+            productos[posicionProducto].eliminarStock(cantidadStock);
+            alert(productos[posicionProducto].mostrarInformacion());
+            return usuarioAdministrador();
+        } else {
+            alert("No puedes eliminar más productos de los que hay cargados, verifique la disponibilidad.");
+        }
     } else {
         alert("La operación ha sido cancelada.");
         return eliminarStockProducto();
@@ -162,45 +199,32 @@ function eliminarStockProducto() {
 }
 
 function eliminarProducto() {
-    let productoParaEliminar = enlazarProducto();
-    let confirmacion = confirm(`El producto a eliminar es #${productos[productoParaEliminar].id} - ${productos[productoParaEliminar].nombre} | ${productos[productoParaEliminar].precio}`);
+    let posicionProducto = enlazarProducto();
+    let confirmacion = confirm(`Producto seleccionado: ${productos[posicionProducto].nombre}`);
     if (confirmacion) {
-        productos.splice(productoParaEliminar,1);
-        console.log(productos);
+        productos[posicionProducto].eliminarProducto(posicionProducto);
+        return usuarioAdministrador();
     } else {
         alert("La operación ha sido cancelada.");
         return eliminarProducto();
     }
-    return usuarioAdministrador();
 }
 
 function panelProductos() {
-    let salida = "\n";
-    for (producto of productos) {
-        salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
-    }
-    let filtroPrecios = prompt(`PANEL DE PRODUCTOS\n${salida}\nIngrese A para ordenar los productos por precio ascendete (- a +), o D por precio descendente (+ a -). Escriba volver para ir al menú principal`).toUpperCase();
+    let filtroPrecios = prompt(`PANEL DE PRODUCTOS\n\n${mostrarTodo(productos)}\nIngrese A para ordenar los productos por precio ascendete (- a +), o D por precio descendente (+ a -). Escriba volver para ir al panel de administrador`).toUpperCase();
     switch (filtroPrecios) {
         case "A":
             let preciosAscendentes = ordenAscendentePrecios();
-            salida = "";
-            for (producto of preciosAscendentes) {
-                salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
-            }
-            alert(`Precios ordenados de menor a mayor:\n\n${salida}`);
+            alert(`Precios ordenados de menor a mayor:\n\n${mostrarTodo(preciosAscendentes)}`);
             return panelProductos();
             break;
         case "D":
             let preciosDescendentes = ordenDescendentePrecios();
-            salida = "";
-            for (producto of preciosDescendentes) {
-                salida += "#" + producto.id + " - " + producto.nombre + " (" + producto.cantidad + " unidades disponibles)" + " | $" + producto.precio + "\n";
-            }
-            alert(`Precios ordenados de mayor a menor:\n\n${salida}`);
+            alert(`Precios ordenados de mayor a menor:\n\n${mostrarTodo(preciosDescendentes)}`);
             return panelProductos();
             break;
         case "VOLVER":
-            return validarUsuario();
+            return usuarioAdministrador();
             break;
         default:
             alert("Introduzca una opción válida.");
@@ -237,8 +261,67 @@ function ordenDescendentePrecios() {
     return preciosDescendentes;
 }
 
+function usuarioCliente() {
+    let funcionCliente = prompt("1 - Ver tienda\n2 - Ver mi carrito\n\nEscriba volver para ir al menú principal").toUpperCase();
+    switch (funcionCliente) {
+        case "1":
+            return irTienda();
+            break;
+        case "2":
+            return verCarrito();
+            break;
+        case "VOLVER":
+            return validarUsuario();
+            break;
+        default:
+            alert("Introduzca una opción válida");
+            return usuarioCliente();
+            break;
+    }
+}
+
+function irTienda() {
+    const productosDisponibles = productos.filter(e => e.cantidad > 0);
+    if (productosDisponibles.length > 0) {
+        alert(`PRODUCTOS DISPONIBLES\n\n${mostrarTodo(productosDisponibles)}\nIntroduzca el ID a continuación`);
+        let producto = enlazarPorID();
+        if (productos[producto].obtenerDisponibilidad()) {
+            let confirmacion = confirm(`Llevarás 1 ${productos[producto].nombre} - $${productos[producto].precio}`);
+            if (confirmacion) {
+                productos[producto].cantidad--;
+                productos[producto].mostrarInformacion();
+                carrito.push(productos[producto]);
+                return irTienda();
+            } else {
+                alert("Cancelaste la operación.");
+                return usuarioCliente();
+            }
+        } else {
+            alert("El producto no se encuentra en stock.");
+            return usuarioCliente();
+        }
+    } else {
+        alert("No hay productos disponibles en la tienda");
+        return usuarioCliente();
+    }
+}
+
+function verCarrito() {
+    if (carrito.length > 0) {
+        alert(`PRODUCTOS SELECCIONADOS\n\n${mostrarTodo(carrito)}\nTOTAL: $${totalCarrito()}`);
+        return usuarioCliente();
+    }  else {
+        alert("No hay productos en el carrito");
+        return usuarioCliente();
+    }
+}
+
+function totalCarrito() {
+    return carrito.reduce((total,producto) => total += producto.precio,0);
+}
+
 function validarUsuario() {
-    let usuario = prompt("¡Bienvenido/a a nuestro E-COMMERCE!\n\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toLocaleUpperCase();
+    let usuario = prompt("¡Bienvenido/a a nuestro E-COMMERCE!\n\nIngrese C para ingresar como CLIENTE o A para ADMINISTRADOR").toUpperCase();
     switch (usuario) {
         case "A":
             return usuarioAdministrador();
@@ -254,47 +337,3 @@ function validarUsuario() {
 }
             
 validarUsuario();
-
-function usuarioCliente() {
-    elegirProductoParaComprar();
-    let producto = enlazarPorID();
-    if (productos[producto].cantidad > 0) {
-        let chequeo = confirm(`Llevarás 1 ${productos[producto].nombre} - $${productos[producto].precio}`);
-        if (chequeo) {
-            productos[producto].cantidad--;
-            productos[producto].mostrarDisponibilidad();
-            return usuarioCliente();
-        } else {
-            alert("Cancelaste la operación.");
-            return usuarioCliente();
-        }
-    } else {
-        alert("El producto no se encuentra en stock.");
-        return usuarioCliente();
-    }
-}
-
-function usuarioAdministrador() {
-    funcion = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n5 - Panel de productos\n\nEscriba volver para ir al menú").toUpperCase();
-    switch (funcion) {
-        case "1":
-            return agregarNuevoProducto();
-            break;
-        case "2":
-            return agregarStockProducto();
-        case "3":
-            return eliminarStockProducto();
-        case "4":
-            return eliminarProducto();
-            break;
-        case "5":
-            return panelProductos();
-        case "VOLVER":
-            return validarUsuario();
-            break;
-        default:
-            alert("Error, ingrese una función válida");
-            return usuarioAdministrador();
-            break;
-    }
-}
