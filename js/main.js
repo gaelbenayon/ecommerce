@@ -19,8 +19,7 @@ class Producto {
         }
     }
     mostrarInformacion() {
-        let salida = `El precio del producto #${this.id} "${this.nombre}" es $${this.precio}\nQuedan ${this.cantidad} unidades disponibles`;
-        return salida;
+        return `El precio del producto #${this.id} "${this.nombre}" es $${this.precio}\nQuedan ${this.cantidad} unidades disponibles`;
     }
     obtenerDisponibilidad() {
         let disponibilidad;
@@ -109,8 +108,8 @@ function enlazarPorNombre() {
 }
 
 function usuarioAdministrador() {
-    funcion = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n5 - Panel de productos\n\nEscriba volver para ir al menú").toUpperCase();
-    switch (funcion) {
+    let funcionAdministrador = prompt("Estás en el panel de administrador\n\n1 - Agregar nuevo producto\n2 - Agregar stock a un producto\n3 - Eliminar stock de un producto\n4 - Eliminar producto de la tienda\n5 - Panel de productos\n\nEscriba volver para ir al menú").toUpperCase();
+    switch (funcionAdministrador) {
         case "1":
             return agregarNuevoProducto();
             break;
@@ -157,7 +156,7 @@ function agregarNuevoProducto() {
         alert("La cantidad mínima de unidades es 0");
         return agregarNuevoProducto();
     }
-    let nuevoProducto = new Producto (categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto,unidadesNuevoProducto);
+    let nuevoProducto = new Producto(categoriaNuevoProducto,nombreNuevoProducto,precioNuevoProducto,unidadesNuevoProducto);
     alert(nuevoProducto.mostrarInformacion());
     return usuarioAdministrador();
 }
