@@ -1,3 +1,17 @@
-#contenido {
+/* #contenido {
     width: 90%;
+} */
+
+.footer {
+    height: 100px;
+    background-color: rgb(94, 92, 92);
 }
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+ul {padding-left: 0;}
+
+li {list-style: none;}

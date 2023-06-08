@@ -1,5 +1,3 @@
-//COMENZANDO EL ARMADO DEL ECCOMERCE PARA EL PROYECTO FINAL
-
 const productos = [];
 const carrito = [];
 
@@ -19,9 +17,11 @@ class Producto {
             alert("Por favor, introduzca los datos de manera correcta");
         }
     }
+
     mostrarInformacion() {
         return `El precio del producto #${this.id} "${this.nombre}" es $${this.precio}\nQuedan ${this.cantidad} unidades disponibles`;
     }
+
     obtenerDisponibilidad() {
         let disponibilidad;
         if (this.cantidad > 0) {
@@ -30,9 +30,11 @@ class Producto {
             return disponibilidad = false;
         }
     }
+
     agregarStock(cantidad) {
         return this.cantidad += cantidad;
     }
+
     eliminarStock(cantidad) {
         if (this.cantidad >= cantidad) {
             return this.cantidad -= cantidad;
@@ -40,6 +42,7 @@ class Producto {
             alert("No puedes eliminar más productos de los que hay cargados, verifique la disponibilidad.");
         }
     }
+
     eliminarProducto(posicion) {
         productos.splice(posicion,1);
     }
@@ -50,17 +53,37 @@ const budinMarmolado = new Producto("budines","budín marmolado",1700,0,"budinMa
 const budinNaranja = new Producto("budines","budín de naranja",1600,1,"budinNaranja.png");
 const chocotorta = new Producto("tortas","chocotorta",4500,1,"chocotorta.png");
 
+function guardarProductos() {
+    localStorage.setItem("productos",JSON.stringify(productos));
+    console.log("Productos guardados");
+}
+
+guardarProductos();
+
+function obtenerProductos() {
+    return JSON.parse(localStorage.getItem("productos"));
+}
+
+function guardarCarrito() {
+    sessionStorage.setItem("carrito",JSON.stringify(carrito));
+}
+
+guardarCarrito();
+
+function obtenerCarrito() {
+    return JSON.parse(sessionStorage.getItem("carrito"));
+}
+
 function mostrarProductos() {
-    let productos = cargarProductosLS();
     let salida = "";
     productos.forEach(producto => {
         salida += `
-        <div class="card col-3">
-            <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre.toUpperCase()}">
+        <div class="card col-12 col-sm-6 col-md-4 col-lg-3">
+            <img style="width:100%" src="${producto.imagen}" class="card-img-top" alt="${producto.nombre.toUpperCase()}">
             <div class="card-body">
                 <h5 class="card-title">$${producto.precio}</h5>
                 <p class="card-text">${producto.nombre.toUpperCase()}</p>
-                <button onclick="verProducto(${producto.id})" class="btn btn-primary">Ver más información</button>
+                <button onclick="seleccionarProducto(${producto.id})" class="btn btn-primary">VER INFO.</button>
             </div>
         </div>
         `;
@@ -68,15 +91,11 @@ function mostrarProductos() {
     document.getElementById("contenido").innerHTML = salida;
 }
 
-function verProducto(id) {
-    let productos = cargarProductosLS();
-    
-    let producto = productos.filter(item => item.id === id);
-    localStorage.setItem("producto", JSON.stringify(producto));
-    // guardarProductosLS();
-    console.log(producto);
-    location.href="producto.html";
-    renderProducto();
-}
-
 mostrarProductos();
+
+function seleccionarProducto(id) {
+    let productos = obtenerProductos();
+    let producto = productos.filter(e => e.id === id);
+    sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
+    location.href = "producto.html";
+}
