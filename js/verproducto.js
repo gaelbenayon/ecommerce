@@ -1,8 +1,10 @@
+let producto = JSON.parse(sessionStorage.getItem("productoSeleccionado"));
+
+const {nombre, imagen, precio} = producto;
+
+document.title = `${nombre.toUpperCase()} | Flikita's Bakery`;
+
 function verProducto() {
-    let producto = JSON.parse(sessionStorage.getItem("productoSeleccionado"));
-
-    const {nombre, imagen, precio} = producto[0];
-
     let salida = `
     <div class="d-grid d-lg-flex">
         <div class="col-12 col-lg-5 bg-danger"> 
@@ -21,10 +23,9 @@ function verProducto() {
 
 verProducto();
 
-const carrito = JSON.parse(sessionStorage.getItem("carrito"));
-
 function agregarAlCarrito() {
-    let producto = JSON.parse(sessionStorage.getItem("productoSeleccionado"));
+    let carrito = [];
     carrito.push(producto);
-    console.log(carrito);
+    localStorage.setItem("carrito",JSON.stringify(carrito));
+    console.log(JSON.parse(localStorage.getItem("carrito")));
 }

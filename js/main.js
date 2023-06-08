@@ -1,5 +1,4 @@
 const productos = [];
-const carrito = [];
 
 class Producto {
     constructor(categoria,nombre,precio,cantidad,imagen) {
@@ -64,14 +63,15 @@ function obtenerProductos() {
     return JSON.parse(localStorage.getItem("productos"));
 }
 
-function guardarCarrito() {
-    sessionStorage.setItem("carrito",JSON.stringify(carrito));
+function obtenerCarrito() {
+    const carrito = JSON.parse(localStorage.getItem("carrito"));
+    return carrito;
 }
 
-guardarCarrito();
+obtenerCarrito();
 
-function obtenerCarrito() {
-    return JSON.parse(sessionStorage.getItem("carrito"));
+function abrirCarrito() {
+    console.log(obtenerCarrito());
 }
 
 function mostrarProductos() {
@@ -95,7 +95,7 @@ mostrarProductos();
 
 function seleccionarProducto(id) {
     let productos = obtenerProductos();
-    let producto = productos.filter(e => e.id === id);
+    let producto = productos.find(e => e.id === id);
     sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
     location.href = "producto.html";
 }
