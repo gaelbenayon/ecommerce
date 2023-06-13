@@ -14,7 +14,7 @@ function verProducto() {
             <div class="d-flex align-items-center flex-column">
                 <h2>${nombre.toUpperCase()}</h2>
                 <h4 class="text-primary"><b>$${precio}</b></h4>
-                <button onclick="agregarAlCarrito()" class="btn btn-primary mt-3"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                <button onclick="agregarAlCarrito(${JSON.stringify(producto)})" class="btn btn-primary mt-3"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
             </div>
         </div>
     </div>`;
@@ -23,9 +23,10 @@ function verProducto() {
 
 verProducto();
 
-function agregarAlCarrito() {
-    let carrito = [];
-    carrito.push(producto);
+function agregarAlCarrito(producto) {
+    let item = JSON.parse(producto);
+    let carrito = localStorage.getItem("carrito");
+    carrito = carrito ? JSON.parse(carrito) : [];
+    carrito.push(item);
     localStorage.setItem("carrito",JSON.stringify(carrito));
-    console.log(JSON.parse(localStorage.getItem("carrito")));
 }
