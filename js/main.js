@@ -43,65 +43,14 @@ class Producto {
     }
 }
 
-const budinLimon = new Producto("budines","budin de limon",1500,3,"budinLimon.png");
-const budinMarmolado = new Producto("budines","budin marmolado",1700,0,"budinMarmolado.png");
-const budinNaranja = new Producto("budines","budin de naranja",1600,1,"budinNaranja.png");
-const chocotorta = new Producto("tortas","chocotorta",4500,1,"chocotorta.png");
-
-function guardarProductos() {
-    localStorage.setItem("productos",JSON.stringify(productos));
-    console.log("Productos guardados");
-}
+new Producto("budines","budin de limon",1500,3,"budinLimon.png");
+new Producto("budines","budin marmolado",1700,0,"budinMarmolado.png");
+new Producto("budines","budin de naranja",1600,1,"budinNaranja.png");
+new Producto("tortas","chocotorta",4500,1,"chocotorta.png");
+new Producto("tortas","torta de coco y dulce de leche",3200,2,"tortaCoco.png")
 
 guardarProductos();
 
-function obtenerProductos() {
-    return JSON.parse(localStorage.getItem("productos"));
-}
-
-function obtenerCarrito() {
-    const carrito = JSON.parse(localStorage.getItem("carrito"));
-    return carrito;
-}
-
 obtenerCarrito();
 
-function abrirCarrito() {
-    console.log(obtenerCarrito());
-    // obtenerCarrito() != null ? mostrarCarrito() : alert("El carrito está vacío");
-}
-
-function mostrarCarrito() {
-    let productos = obtenerProductos();
-    console.log(obtenerCarrito());
-    obtenerCarrito().forEach(elemento => {
-        console.log(productos.indexOf(elemento));
-    });
-}
-
-function mostrarProductos() {
-    let salida = "";
-    productos.forEach(producto => {
-        const {imagen, nombre, precio, id} = producto;
-        salida += `
-        <div class="card col-12 col-sm-6 col-md-4 col-lg-3">
-            <img style="width:100%" src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
-            <div class="card-body">
-                <h5 class="card-title">$${precio}</h5>
-                <p class="card-text">${nombre.toUpperCase()}</p>
-                <button onclick="seleccionarProducto(${id})" class="btn btn-primary">VER INFO.</button>
-            </div>
-        </div>
-        `;
-    });
-    document.getElementById("contenido").innerHTML = salida;
-}
-
-mostrarProductos();
-
-function seleccionarProducto(id) {
-    let productos = obtenerProductos();
-    let producto = productos.find(e => e.id === id);
-    sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
-    location.href = "producto.html";
-}
+renderizarProductos(obtenerProductos());

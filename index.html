@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="style/style.css">
     <title>Flikita's Bakery</title>
 </head>
@@ -22,12 +23,12 @@
                     <a class="nav-link active" aria-current="page" href="#">INICIO</a>
                   </li>
                   <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">NUESTROS PRODUCTOS<a>
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">NUESTROS PRODUCTOS<a>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">BUDINES</a></li>
-                      <li><a class="dropdown-item" href="#">TORTAS</a></li>
+                      <li><a class="dropdown-item" onclick="renderizarProductos(budines)">BUDINES</a></li>
+                      <li><a class="dropdown-item" onclick="renderizarProductos(tortas)">TORTAS</a></li>
                       <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="#">¡PRÓXIMAMENTE NUEVAS COSAS PARA PROBAR!</a></li>
+                      <li><a class="dropdown-item">¡PRÓXIMAMENTE NUEVAS COSAS PARA PROBAR!</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -38,10 +39,32 @@
               </div>
             </div>
         </nav>
-        <button onclick="abrirCarrito()" class="btn"><i class="fa-solid fa-cart-shopping text-primary"></i></button>
+        <div class="text-end m-4">
+          <button class="dropdown btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-sliders"></i>
+          </button>
+          <ul class="dropdown-menu text-primary">
+            <li><a class="dropdown-item" onclick="renderizarProductos(obtenerProductos())">VER TODO</a></li>
+            <li><a class="dropdown-item" onclick="renderizarProductos(budines)">BUDINES</a></li>
+            <li><a class="dropdown-item" onclick="renderizarProductos(tortas)">TORTAS</a></li>
+          </ul>
+          <button id="botonCarrito" onclick="abrirCarrito()" class="btn btn-primary position-relative">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="carritoCantidad" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-primary"></span>
+          </button>
+          <div class="offcanvas offcanvas-start" tabindex="-1" id="carritoModal">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title text-primary">MI CARRITO</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div id="carrito" class="offcanvas-body text-start"> 
+             
+            </div>
+          </div>
+        </div>
     </header>
     <main>
-        <section id="contenido" class="m-auto row text-center justify-content-center my-5 gap-3">
+        <section id="contenido" class="m-auto row text-center justify-content-center my-3 gap-3">
 
         </section>
     </main>
@@ -55,8 +78,11 @@
             </div>
         </section>
     </footer>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://kit.fontawesome.com/c5ad3a116b.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="js/funciones.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/filtrosBusqueda.js"></script>
 </body>
 </html>
