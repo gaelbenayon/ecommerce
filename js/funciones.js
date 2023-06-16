@@ -1,10 +1,10 @@
-function guardarProductos() {
+function guardarProductos(productos) {
     localStorage.setItem("productos",JSON.stringify(productos));
     console.log("Productos guardados");
 }
 
 function obtenerProductos() {
-    return JSON.parse(localStorage.getItem("productos"));
+    return JSON.parse(localStorage.getItem("productos") || []);
 }
 
 function obtenerCarrito() {
@@ -23,7 +23,9 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
-document.getElementById("carritoCantidad").innerHTML = cantidadEnCarrito();
+function mostrarCantidadProductosCarrito() {
+    document.getElementById("carritoCantidad").innerHTML = cantidadEnCarrito();
+}
 
 function abrirCarrito() {
     cantidadEnCarrito() > 0 ? mostrarCarrito() : mensajeCarritoVacio();
@@ -33,11 +35,11 @@ function mostrarCarrito() {
     const botonCarrito = document.getElementById("botonCarrito");
     botonCarrito.setAttribute("data-bs-toggle","offcanvas");
     botonCarrito.setAttribute("data-bs-target","#carritoModal");
-    let salida = '';
+    let salida = '<div class="row my-3 d-flex align-items-center">';
     obtenerCarrito().forEach(element => {
         const {nombre,id,precio,imagen} = element;
         salida += `
-        <div class="row my-3 d-flex align-items-center">
+        <div class="row my-2">
             <div class="col-4">
                 <img src="${imagen}" class="rounded" width="100%">
             </div>
@@ -52,8 +54,15 @@ function mostrarCarrito() {
             </div>
         </div>`;
     });
-    
+    salida += `
+        <div class="col-6 my-2"><h6 class="text-primary">TOTAL: $${calcularTotalCarrito()}</div>
+    </div>
+    `
     document.getElementById("carrito").innerHTML = salida;
+}
+
+function calcularTotalCarrito() {
+    return obtenerCarrito().reduce((ac,producto) => ac + producto.precio,0);
 }
 
 function mensajeCarritoVacio() {
@@ -69,14 +78,14 @@ function mensajeCarritoVacio() {
 function renderizarProductos(filtro) {
     let salida = "";
     filtro.forEach(producto => {
-        const {imagen, nombre, precio, id} = producto;
+        const {imagen,nombre,precio,id,categoria} = producto;
         salida += `
         <div class="card col-12 col-sm-6 col-md-4 col-lg-3">
-            <img style="width:100%" src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
-            <div class="card-body">
-                <h5 class="card-title text-primary">$${precio}</h5>
+            <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
+            <div class="card-body text-start">
+                <h3 class="card-title text-primary text-start">$${precio}</h3>
                 <p class="card-text">${nombre.toUpperCase()}</p>
-                <button onclick="seleccionarProducto(${id})" class="btn btn-primary">VER</button>
+                <button onclick="seleccionarProducto(${id})" class="btn btn-primary w-100">Ver Producto</button>
             </div>
         </div>
         `;
@@ -93,30 +102,64 @@ function seleccionarProducto(id) {
 
 function renderizarProductoSeleccionado() {
     let salida = `
-    <div class="d-grid d-lg-flex">
-        <div class="col-12 col-lg-5 bg-danger"> 
-            <img style="width:100%" src="${imagen}"> 
+    <div class="d-grid d-lg-flex w-75 my-5">
+        <div class="col-12 col-lg-5"> 
+            <img class="img-fluid" src="${imagen}"> 
         </div>
-        <div class="col-12 col-lg-7 pt-5">
-            <div class="d-flex align-items-center flex-column">
+        <div class="col-12 col-lg-7 pt-5 border">
+            <div class="d-flex text-center flex-column"> 
+                <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
                 <h2>${nombre.toUpperCase()}</h2>
-                <h4 class="text-primary"><b>$${precio}</b></h4>
-                <button onclick="consultarStock()" class="btn btn-primary mt-3"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                <h4 class="text-primary">$${precio}</h4>
+                <h5 class="mt-3 small">CANTIDAD<h/5>
+                <select id="unidadesProducto">
+                <option selected value="1">1</option>
+                <option value="2">2</option>
+                </select>
+                <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
+                <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 my-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
             </div>
         </div>
     </div>`;
     document.getElementById("contenido").innerHTML = salida;
+    document.getElementById("unidadesDisponibles").innerHTML = `${unidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+}
+
+function unidadesDisponiblesSeleccion() {
+    let productos = obtenerProductos();
+    let idProducto = obtenerProductoSeleccionado().id;
+    let producto = productos.find(e => e.id === idProducto);
+    let posicionEnProductos = productos.indexOf(producto);
+    return productos[posicionEnProductos].cantidad;
 }
 
 function consultarStock() {
-    obtenerProductoSeleccionado().cantidad > 0 ? agregarAlCarrito() : notificacionSinStock();
+    unidadesDisponiblesSeleccion() >= obtenerUnidadesSeleccionadas() ? agregarAlCarrito(obtenerUnidadesSeleccionadas()) : notificacionSinStock();
 }
 
-function agregarAlCarrito() {
+function obtenerUnidadesSeleccionadas() {
+    return document.getElementById("unidadesProducto").value;
+}
+
+function agregarAlCarrito(unidades) {
     let carrito = obtenerCarrito();
-    carrito.push(obtenerProductoSeleccionado());
-    guardarCarrito(carrito);
+    for (i=0;i<unidades;i++) {
+        carrito.push(obtenerProductoSeleccionado());
+        guardarCarrito(carrito);
+        eliminarUnidadProducto();
+    }
     notificacionAgregadoAlCarrito();
+    mostrarCantidadProductosCarrito();
+    document.getElementById("unidadesDisponibles").innerHTML = `${unidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+}
+
+function eliminarUnidadProducto() {
+    let productos = obtenerProductos();
+    let idProducto = obtenerProductoSeleccionado().id;
+    let producto = productos.find(e => e.id === idProducto);
+    let posicionEnProductos = productos.indexOf(producto);
+    productos[posicionEnProductos].cantidad--;
+    guardarProductos(productos);
 }
 
 function eliminarDelCarrito() {
@@ -135,7 +178,7 @@ function notificacionAgregadoAlCarrito() {
 
 function notificacionEliminadoDelCarrito() {
     Toastify({
-        text: "Función a desarrollar para la próxima entrega :)",
+        text: "Función a desarrollar para la entrega final :)",
         duration: 3000,
         gravity: "bottom",
         position: "left",
@@ -144,5 +187,11 @@ function notificacionEliminadoDelCarrito() {
 }
 
 function notificacionSinStock() {
-    alert("CONFIGURAR");
+    Toastify({
+        text: "¡Producto sin stock disponible!",
+        duration: 3000,
+        gravity: "bottom",
+        position: "left",
+        style: {background: "red"},
+      }).showToast();
 }

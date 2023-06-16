@@ -49,8 +49,10 @@ new Producto("budines","budin de naranja",1600,1,"budinNaranja.png");
 new Producto("tortas","chocotorta",4500,1,"chocotorta.png");
 new Producto("tortas","torta de coco y dulce de leche",3200,2,"tortaCoco.png")
 
-guardarProductos();
+guardarProductos(productos);
 
 obtenerCarrito();
 
-renderizarProductos(obtenerProductos());
+renderizarProductos(productosDisponibles);
+
+mostrarCantidadProductosCarrito();
