@@ -1,4 +1,4 @@
-let producto = JSON.parse(sessionStorage.getItem("productoSeleccionado"));
+let producto = obtenerProductoSeleccionado();
 
 const {nombre,categoria,precio,imagen} = producto;
 
