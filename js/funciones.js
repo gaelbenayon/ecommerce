@@ -1,6 +1,6 @@
 function guardarProductos(productos) {
     localStorage.setItem("productos",JSON.stringify(productos));
-    console.log("Productos guardados");
+    console.log("Productos guardados / Local Storage actualizada");
 }
 
 function obtenerProductos() {
@@ -37,9 +37,9 @@ function mostrarCarrito() {
     botonCarrito.setAttribute("data-bs-target","#carritoModal");
     let salida = '<div class="row my-3 d-flex align-items-center">';
     obtenerCarrito().forEach(element => {
-        const {nombre,id,precio,imagen} = element;
+        const {nombre,precio,imagen} = element;
         salida += `
-        <div class="row my-2">
+        <div class="row my-2 align-items-center">
             <div class="col-4">
                 <img src="${imagen}" class="rounded" width="100%">
             </div>
@@ -102,11 +102,11 @@ function seleccionarProducto(id) {
 
 function renderizarProductoSeleccionado() {
     let salida = `
-    <div class="d-grid d-lg-flex w-100 my-5">
-        <div class="col-12 col-lg-5"> 
+    <div class="d-sm-flex col-11 align-items-center">
+        <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
             <img class="img-fluid" src="${imagen}"> 
         </div>
-        <div class="col-12 col-lg-7 pt-5 border">
+        <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 border">
             <div class="d-flex text-center flex-column"> 
                 <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
                 <h2>${nombre.toUpperCase()}</h2>
@@ -122,23 +122,29 @@ function renderizarProductoSeleccionado() {
         </div>
     </div>`;
     document.getElementById("contenido").innerHTML = salida;
-    document.getElementById("unidadesDisponibles").innerHTML = `${unidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
-}
-
-function unidadesDisponiblesSeleccion() {
-    let productos = obtenerProductos();
-    let idProducto = obtenerProductoSeleccionado().id;
-    let producto = productos.find(e => e.id === idProducto);
-    let posicionEnProductos = productos.indexOf(producto);
-    return productos[posicionEnProductos].cantidad;
+    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
 function consultarStock() {
-    unidadesDisponiblesSeleccion() >= obtenerUnidadesSeleccionadas() ? agregarAlCarrito(obtenerUnidadesSeleccionadas()) : notificacionSinStock();
+    let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
+    let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
+    if (unidadesDisponibles === 0) {
+        notificacionSinStock();
+    } else if (unidadesDisponibles < unidadesSeleccionadas) {
+        notificacionStockInsuficiente();
+    } else {
+        agregarAlCarrito(unidadesSeleccionadas);
+    }
 }
 
 function obtenerUnidadesSeleccionadas() {
     return document.getElementById("unidadesProducto").value;
+}
+
+function obtenerUnidadesDisponiblesSeleccion() {
+    let productos = obtenerProductos();
+    let posicion = productos.findIndex(e => e.id === obtenerProductoSeleccionado().id);
+    return productos[posicion].cantidad;
 }
 
 function agregarAlCarrito(unidades) {
@@ -153,7 +159,7 @@ function agregarAlCarrito(unidades) {
     }
     notificacionAgregadoAlCarrito();
     mostrarCantidadProductosCarrito();
-    document.getElementById("unidadesDisponibles").innerHTML = `${unidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
 function eliminarUnidadProducto() {
@@ -196,4 +202,20 @@ function notificacionSinStock() {
         position: "left",
         style: {background: "red"},
       }).showToast();
+}
+
+function notificacionStockInsuficiente() {
+    let mensaje = "";
+    if (obtenerUnidadesDisponiblesSeleccion() > 1) {
+        mensaje = "unidades disponibles";
+    } else {
+        mensaje = "unidad disponible";
+    }
+    Toastify({
+        text: `No hay stock suficiente para su selección, hay ${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`,
+        duration: 3000,
+        gravity: "bottom",
+        position: "left",
+        style: {background: "red"},
+    }).showToast();
 }
