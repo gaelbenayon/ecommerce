@@ -97,7 +97,7 @@ function seleccionarProducto(id) {
     let productos = obtenerProductos();
     let producto = productos.find(e => e.id === id);
     sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
-    location.href = "js/producto.html";
+    location.href = "producto.html";
 }
 
 function renderizarProductoSeleccionado() {
