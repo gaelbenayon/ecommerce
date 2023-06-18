@@ -7,7 +7,7 @@ class Producto {
         this.nombre = nombre;
         this.precio = parseFloat(precio);
         this.cantidad = parseInt(cantidad);
-        this.imagen = `../assets/productos/${imagen}`;
+        this.imagen = `assets/productos/${imagen}`;
         if (isNaN(categoria) && isNaN(nombre) && precio > 0 && cantidad >= 0) {
             console.log(this);
             productos.push(this);
