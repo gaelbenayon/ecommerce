@@ -4,7 +4,7 @@ function guardarProductos(productos) {
 }
 
 function obtenerProductos() {
-    return JSON.parse(localStorage.getItem("productos") || []);
+    return JSON.parse(localStorage.getItem("productos")) || [];
 }
 
 function obtenerCarrito() {
@@ -78,9 +78,9 @@ function mensajeCarritoVacio() {
 function renderizarProductos(filtro) {
     let salida = "";
     filtro.forEach(producto => {
-        const {imagen,nombre,precio,id,categoria} = producto;
+        const {imagen,nombre,precio,id} = producto;
         salida += `
-        <div class="card col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card col-11 col-sm-6 col-md-4 col-lg-3">
             <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
             <div class="card-body text-start">
                 <h3 class="card-title text-primary text-start">$${precio}</h3>
@@ -102,7 +102,7 @@ function seleccionarProducto(id) {
 
 function renderizarProductoSeleccionado() {
     let salida = `
-    <div class="d-grid d-lg-flex w-75 my-5">
+    <div class="d-grid d-lg-flex w-100 my-5">
         <div class="col-12 col-lg-5"> 
             <img class="img-fluid" src="${imagen}"> 
         </div>
@@ -112,7 +112,7 @@ function renderizarProductoSeleccionado() {
                 <h2>${nombre.toUpperCase()}</h2>
                 <h4 class="text-primary">$${precio}</h4>
                 <h5 class="mt-3 small">CANTIDAD<h/5>
-                <select id="unidadesProducto">
+                <select name="cantidad" id="unidadesProducto">
                 <option selected value="1">1</option>
                 <option value="2">2</option>
                 </select>
@@ -143,8 +143,11 @@ function obtenerUnidadesSeleccionadas() {
 
 function agregarAlCarrito(unidades) {
     let carrito = obtenerCarrito();
+    let producto = obtenerProductoSeleccionado();
+    producto.cantidad = 0;
     for (i=0;i<unidades;i++) {
-        carrito.push(obtenerProductoSeleccionado());
+        producto.cantidad++;
+        carrito.push(producto);
         guardarCarrito(carrito);
         eliminarUnidadProducto();
     }
@@ -156,8 +159,7 @@ function agregarAlCarrito(unidades) {
 function eliminarUnidadProducto() {
     let productos = obtenerProductos();
     let idProducto = obtenerProductoSeleccionado().id;
-    let producto = productos.find(e => e.id === idProducto);
-    let posicionEnProductos = productos.indexOf(producto);
+    let posicionEnProductos = productos.findIndex(e => e.id === idProducto);
     productos[posicionEnProductos].cantidad--;
     guardarProductos(productos);
 }
