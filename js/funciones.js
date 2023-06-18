@@ -101,10 +101,12 @@ function seleccionarProducto(id) {
 }
 
 function renderizarProductoSeleccionado() {
+    let producto = obtenerProductoSeleccionado();
+    let {nombre,categoria,precio,imagen} = producto;
     let salida = `
     <div class="d-sm-flex col-11 align-items-center">
         <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
-            <img class="img-fluid" src="${imagen}"> 
+            <img class="img-fluid" src="${imagen}" alt="${nombre.toUpperCase()}"> 
         </div>
         <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 border">
             <div class="d-flex text-center flex-column"> 
@@ -112,7 +114,7 @@ function renderizarProductoSeleccionado() {
                 <h2>${nombre.toUpperCase()}</h2>
                 <h4 class="text-primary">$${precio}</h4>
                 <h5 class="mt-3 small">CANTIDAD<h/5>
-                <select name="cantidad" id="unidadesProducto">
+                <select title="Seleccione la cantidad de unidades para agregar al carrito" id="unidadesProducto">
                 <option selected value="1">1</option>
                 <option value="2">2</option>
                 </select>
@@ -143,7 +145,7 @@ function obtenerUnidadesSeleccionadas() {
 
 function obtenerUnidadesDisponiblesSeleccion() {
     let productos = obtenerProductos();
-    let posicion = productos.findIndex(e => e.id === obtenerProductoSeleccionado().id);
+    let posicion = productos.findIndex(e => e.id == obtenerProductoSeleccionado().id);
     return productos[posicion].cantidad;
 }
 
