@@ -32,9 +32,9 @@
                     </ul>
                   </li>
                 </ul>
-                <form class="d-flex" role="search">
-                  <input class="form-control me-2" type="search" placeholder="Próximamente" aria-label="Buscar">
-                  <button class="btn btn-outline-light" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <form class="d-flex" role="search" onsubmit="filtrarBuscador()">
+                  <input id="buscador" class="form-control me-2" type="search" placeholder="Buscar una categoría" aria-label="Buscar">
+                  <button class="btn btn-outline-light" type="submit"><i class="fa-solid fa-magnifying-glass" onsubmit="filtrarBuscador()"></i></button>
                 </form>
               </div>
             </div>
@@ -64,14 +64,14 @@
         </div>
     </header>
     <main>
-        <section id="contenido" class="row justify-content-center gap-3">
+        <section id="contenido" class="row justify-content-center gap-3 m-0">
 
         </section>
     </main>
     <footer>
         <section class="footer d-flex text-light align-items-center">
             <div class="w-100 text-center">
-                <h6>¡SEGUIME EN INSTAGRAM!</h6>
+                <h6>¡SEGUINOS EN INSTAGRAM!</h6>
                 <ul>
                     <li><a target="_blank" href="https://instagram.com/flikitas_bakery"><i class="me-1 fa-brands fa-instagram"></i>flikitas_bakery</a></li>
                 </ul>

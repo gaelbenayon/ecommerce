@@ -108,7 +108,7 @@ function renderizarProductoSeleccionado() {
         <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
             <img class="img-fluid" src="${imagen}" alt="${nombre.toUpperCase()}"> 
         </div>
-        <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 border">
+        <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 px-2 border">
             <div class="d-flex text-center flex-column"> 
                 <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
                 <h2>${nombre.toUpperCase()}</h2>
@@ -125,6 +125,22 @@ function renderizarProductoSeleccionado() {
     </div>`;
     document.getElementById("contenido").innerHTML = salida;
     document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+}
+
+function filtrarBuscador() {
+    event.preventDefault();
+    let filtro = document.getElementById("buscador").value.toLowerCase();
+    switch (filtro) {
+        case "budines":
+            renderizarProductos(budines());
+            break;
+        case "tortas":
+            renderizarProductos(tortas());
+            break;
+        default:
+            document.getElementById("contenido").innerHTML = "<p>No se encontraron resultados, intente con otra palabra o filtre con el botón superior</p>";
+            break;
+    }
 }
 
 function consultarStock() {
