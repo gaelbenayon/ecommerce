@@ -1,6 +1,5 @@
-function guardarProductos(productos) {
+function guardarProductos(productos) { 
     localStorage.setItem("productos",JSON.stringify(productos));
-    console.log("Productos guardados / Local Storage actualizada");
 }
 
 function obtenerProductos() {
@@ -15,64 +14,8 @@ function guardarCarrito(carrito) {
     localStorage.setItem("carrito",JSON.stringify(carrito));
 }
 
-function cantidadEnCarrito() {
-    return obtenerCarrito().length;
-}
-
 function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
-}
-
-function mostrarCantidadProductosCarrito() {
-    document.getElementById("carritoCantidad").innerHTML = cantidadEnCarrito();
-}
-
-function abrirCarrito() {
-    cantidadEnCarrito() > 0 ? mostrarCarrito() : mensajeCarritoVacio();
-}
-
-function mostrarCarrito() {
-    const botonCarrito = document.getElementById("botonCarrito");
-    botonCarrito.setAttribute("data-bs-toggle","offcanvas");
-    botonCarrito.setAttribute("data-bs-target","#carritoModal");
-    let salida = '<div class="row my-3 d-flex align-items-center">';
-    obtenerCarrito().forEach(element => {
-        const {nombre,precio,imagen} = element;
-        salida += `
-        <div class="row my-2 align-items-center">
-            <div class="col-4">
-                <img src="${imagen}" class="rounded" width="100%">
-            </div>
-            <div class="col-6 text-center">
-                ${nombre.toUpperCase()}
-                <p class="text-primary"><b>$${precio}</b></p>
-            </div>
-            <div class="col-2">
-                <button class="btn" onclick="eliminarDelCarrito()">
-                    <i class="fa-solid fa-trash-can text-primary"></i>
-                </button>
-            </div>
-        </div>`;
-    });
-    salida += `
-        <div class="col-6 my-2"><h6 class="text-primary">TOTAL: $${calcularTotalCarrito()}</div>
-    </div>
-    `
-    document.getElementById("carrito").innerHTML = salida;
-}
-
-function calcularTotalCarrito() {
-    return obtenerCarrito().reduce((ac,producto) => ac + producto.precio,0);
-}
-
-function mensajeCarritoVacio() {
-    Toastify({
-        text: "Todavía no has agregado productos a tu carrito",
-        duration: 3000,
-        gravity: "bottom",
-        position: "left",
-        style: {background: "red"},
-    }).showToast();
 }
 
 function renderizarProductos(filtro) {
@@ -127,22 +70,6 @@ function renderizarProductoSeleccionado() {
     document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
-function filtrarBuscador() {
-    event.preventDefault();
-    let filtro = document.getElementById("buscador").value.toLowerCase();
-    switch (filtro) {
-        case "budines":
-            renderizarProductos(budines());
-            break;
-        case "tortas":
-            renderizarProductos(tortas());
-            break;
-        default:
-            document.getElementById("contenido").innerHTML = "<p>No se encontraron resultados, intente con otra palabra o filtre con el botón superior</p>";
-            break;
-    }
-}
-
 function consultarStock() {
     let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
     let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
@@ -165,75 +92,10 @@ function obtenerUnidadesDisponiblesSeleccion() {
     return productos[posicion].cantidad;
 }
 
-function agregarAlCarrito(unidades) {
-    let carrito = obtenerCarrito();
-    let producto = obtenerProductoSeleccionado();
-    producto.cantidad = 0;
-    for (i=0;i<unidades;i++) {
-        producto.cantidad++;
-        carrito.push(producto);
-        guardarCarrito(carrito);
-        eliminarUnidadProducto();
-    }
-    notificacionAgregadoAlCarrito();
-    mostrarCantidadProductosCarrito();
-    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
-}
-
 function eliminarUnidadProducto() {
     let productos = obtenerProductos();
     let idProducto = obtenerProductoSeleccionado().id;
     let posicionEnProductos = productos.findIndex(e => e.id === idProducto);
     productos[posicionEnProductos].cantidad--;
     guardarProductos(productos);
-}
-
-function eliminarDelCarrito() {
-    notificacionEliminadoDelCarrito();
-}
-
-function notificacionAgregadoAlCarrito() {
-    Toastify({
-        text: "¡Producto agregado al carrito!",
-        duration: 3000,
-        gravity: "bottom",
-        position: "left",
-        style: {background: "#0d6efd"},
-      }).showToast();
-}
-
-function notificacionEliminadoDelCarrito() {
-    Toastify({
-        text: "Función a desarrollar para la entrega final :)",
-        duration: 3000,
-        gravity: "bottom",
-        position: "left",
-        style: {background: "red"},
-      }).showToast();
-}
-
-function notificacionSinStock() {
-    Toastify({
-        text: "¡Producto sin stock disponible!",
-        duration: 3000,
-        gravity: "bottom",
-        position: "left",
-        style: {background: "red"},
-      }).showToast();
-}
-
-function notificacionStockInsuficiente() {
-    let mensaje = "";
-    if (obtenerUnidadesDisponiblesSeleccion() > 1) {
-        mensaje = "unidades disponibles";
-    } else {
-        mensaje = "unidad disponible";
-    }
-    Toastify({
-        text: `No hay stock suficiente para su selección, hay ${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`,
-        duration: 3000,
-        gravity: "bottom",
-        position: "left",
-        style: {background: "red"},
-    }).showToast();
 }
