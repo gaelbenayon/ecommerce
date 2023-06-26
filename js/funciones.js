@@ -83,19 +83,19 @@ function consultarStock() {
 }
 
 function obtenerUnidadesSeleccionadas() {
-    return document.getElementById("unidadesProducto").value;
+    return parseInt(document.getElementById("unidadesProducto").value);
 }
 
 function obtenerUnidadesDisponiblesSeleccion() {
     let productos = obtenerProductos();
     let posicion = productos.findIndex(e => e.id == obtenerProductoSeleccionado().id);
-    return productos[posicion].cantidad;
+    return parseInt(productos[posicion].cantidad);
 }
 
-function eliminarUnidadProducto() {
+function eliminarCantidadProducto(cantidad) {
     let productos = obtenerProductos();
     let idProducto = obtenerProductoSeleccionado().id;
     let posicionEnProductos = productos.findIndex(e => e.id === idProducto);
-    productos[posicionEnProductos].cantidad--;
+    productos[posicionEnProductos].cantidad -= cantidad;
     guardarProductos(productos);
 }
