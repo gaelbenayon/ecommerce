@@ -27,6 +27,12 @@ function mostrarCantidadProductosCarrito() {
 
 function abrirCarrito() {
     cantidadEnCarrito() > 0 ? mostrarCarrito() : notificacionCarritoVacio();
+    const botones = Array.from(document.getElementsByClassName("btnCarritoEliminar"));
+    for (boton of botones) {
+        boton.onclick = function() {
+            console.log(this.parentElement.previousElementSibling.children[0]); 
+        }
+    }
 }
 
 function mostrarCarrito() {
@@ -42,11 +48,11 @@ function mostrarCarrito() {
                 <img src="${imagen}" class="rounded" width="100%">
             </div>
             <div class="col-6 text-center">
-                ${nombre.toUpperCase()}
+                <p>${nombre.toUpperCase()}</p>
                 <p class="text-primary">${cantidad} x <b>$${precio}</b></p>
             </div>
             <div class="col-2">
-                <button class="btn" onclick="eliminarDelCarrito()">
+                <button class="btn btnCarritoEliminar">
                     <i class="fa-solid fa-trash-can text-primary"></i>
                 </button>
             </div>
@@ -68,5 +74,6 @@ function cantidadEnCarrito() {
 }
 
 function eliminarDelCarrito() {
-    notificacionEliminadoDelCarrito();
+    // notificacionEliminadoDelCarrito();
+    
 }
