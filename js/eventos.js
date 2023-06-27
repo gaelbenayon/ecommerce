@@ -13,6 +13,11 @@ for (let torta of filtroTortas) {
     torta.onclick = function() {renderizarProductos(tortas())};
 }
 
+const filtroAPI = Array.from(document.getElementsByClassName("otrosProductos"));
+for (let item of filtroAPI) {
+    item.onclick = function() {obtenerProductosAPI()};
+} 
+
 const botonCarrito = Array.from(document.getElementsByClassName("botonCarrito"));
 for (let item of botonCarrito) {
     item.onclick = function() {abrirCarrito()};

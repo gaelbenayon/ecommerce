@@ -27,21 +27,19 @@ function mostrarCantidadProductosCarrito() {
 
 function abrirCarrito() {
     cantidadEnCarrito() > 0 ? mostrarCarrito() : notificacionCarritoVacio();
-    const botones = Array.from(document.getElementsByClassName("btnCarritoEliminar"));
-    for (boton of botones) {
-        boton.onclick = function() {
-            console.log(this.parentElement.previousElementSibling.children[0]); 
-        }
-    }
 }
 
-function mostrarCarrito() {
+function activarCarritoModal() {
     const botonCarrito = document.getElementById("botonCarrito");
     botonCarrito.setAttribute("data-bs-toggle","offcanvas");
     botonCarrito.setAttribute("data-bs-target","#carritoModal");
+}
+
+function mostrarCarrito() {
+    activarCarritoModal();
     let salida = '<div class="row my-3 d-flex align-items-center">';
-    obtenerCarrito().forEach(element => {
-        const {nombre,precio,cantidad,imagen} = element;
+    obtenerCarrito().forEach(producto => {
+        const {id,nombre,precio,cantidad,imagen} = producto;
         salida += `
         <div class="row my-2 align-items-center">
             <div class="col-4">
@@ -52,7 +50,7 @@ function mostrarCarrito() {
                 <p class="text-primary">${cantidad} x <b>$${precio}</b></p>
             </div>
             <div class="col-2">
-                <button class="btn btnCarritoEliminar">
+                <button class="btn" onclick="eliminarDelCarrito(${id})">
                     <i class="fa-solid fa-trash-can text-primary"></i>
                 </button>
             </div>
@@ -73,7 +71,26 @@ function cantidadEnCarrito() {
     return obtenerCarrito().reduce((ac,producto) => ac + producto.cantidad,0);
 }
 
-function eliminarDelCarrito() {
-    // notificacionEliminadoDelCarrito();
-    
+function eliminarDelCarrito(id) {
+    let posicionProductos = obtenerProductos().findIndex(e => e.id === id);
+    let productos = obtenerProductos();
+    productos[posicionProductos].cantidad++;
+    guardarProductos(productos);
+
+    let posicionCarrito = obtenerCarrito().findIndex(e => e.id === id);
+    let carrito = obtenerCarrito();
+    carrito[posicionCarrito].cantidad--;
+
+    if (carrito[posicionCarrito].cantidad < 1) {
+        carrito.splice(posicionCarrito,1);
+    }
+
+    if(carrito.length < 1) {
+        let carritoModal = document.getElementById("carritoModal");
+        carritoModal.classList.remove("show");
+    }
+
+    guardarCarrito(carrito);
+    mostrarCarrito();
+    mostrarCantidadProductosCarrito()
 }

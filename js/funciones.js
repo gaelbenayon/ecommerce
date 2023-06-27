@@ -23,7 +23,7 @@ function renderizarProductos(filtro) {
     filtro.forEach(producto => {
         const {imagen,nombre,precio,id} = producto;
         salida += `
-        <div class="card col-11 col-sm-6 col-md-4 col-lg-3">
+        <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
             <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
             <div class="card-body text-start">
                 <h3 class="card-title text-primary text-start">$${precio}</h3>
@@ -34,6 +34,37 @@ function renderizarProductos(filtro) {
         `;
     });
     document.getElementById("contenido").innerHTML = salida;
+}
+
+async function obtenerProductosAPI() {
+    document.getElementById("contenido").innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    `;
+    try {
+        const response = await fetch('https://fakestoreapi.com/products/?limit=5');
+        const data = await response.json();    
+        let salida = "";      
+        data.forEach(e => {
+            const {title,image,price,id} = e;
+            salida += `
+            <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
+                <img src="${image}" class="card-img-top" alt="${title.toUpperCase()}">
+                <div class="card-body text-start">
+                    <h3 class="card-title text-primary text-start">USD $${price}</h3>
+                    <p class="card-text">${title.toUpperCase()}</p>
+                </div>
+            </div>`;
+        })
+        document.getElementById("contenido").innerHTML = salida;
+    } catch (error) {
+        document.getElementById("contenido").innerHTML = `
+        <div class="alert alert-danger w-75 text-center" role="alert">
+            ¡OCURRIÓ UN ERROR INESPERADO!: <br> ${error}
+        </div>
+        `;
+    }
 }
 
 function seleccionarProducto(id) {
