@@ -1,3 +1,8 @@
+const filtradorOnSubmit = Array.from(document.getElementsByClassName("filtradorOnSubmit"));
+for (let buscador of filtradorOnSubmit) {
+    buscador.onsubmit = function() {filtrarBuscador()};
+}
+
 const filtroProductosTodos = Array.from(document.getElementsByClassName("productosTodos"));
 for (let item of filtroProductosTodos) {
     item.onclick = function() {renderizarProductos(obtenerProductos())};

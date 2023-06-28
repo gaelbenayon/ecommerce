@@ -18,36 +18,58 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
+function loader() {
+    document.getElementById("contenido").innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Cargando...</span>
+        </div>`;
+}
+
+function delay() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(true);
+        }, 1000);
+    })
+}
+
 function renderizarProductos(filtro) {
-    let salida = "";
-    filtro.forEach(producto => {
-        const {imagen,nombre,precio,id} = producto;
-        salida += `
-        <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
-            <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
-            <div class="card-body text-start">
-                <h3 class="card-title text-primary text-start">$${precio}</h3>
-                <p class="card-text">${nombre.toUpperCase()}</p>
-                <button onclick="seleccionarProducto(${id})" class="btn btn-primary w-100">Ver Producto</button>
+    loader();
+    delay().then(value => {
+        try {
+            let array = filtro;
+            let salida = "";
+            array.forEach(producto => {
+                const {imagen,nombre,precio,id} = producto;
+                salida += `
+                <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
+                    <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
+                    <div class="card-body text-start">
+                        <h3 class="card-title text-primary text-start">$${precio}</h3>
+                        <p class="card-text">${nombre.toUpperCase()}</p>
+                        <button onclick="seleccionarProducto(${id})" class="btn btn-primary w-100">Ver Producto</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById("contenido").innerHTML = salida;
+        } catch (error) {
+            document.getElementById("contenido").innerHTML = `
+            <div class="alert alert-danger w-75 text-center" role="alert">
+                <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${error}
             </div>
-        </div>
-        `;
-    });
-    document.getElementById("contenido").innerHTML = salida;
+            `;
+        }
+    })
 }
 
 async function obtenerProductosAPI() {
-    document.getElementById("contenido").innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-    `;
+    loader();
     try {
         const response = await fetch('https://fakestoreapi.com/products/?limit=5');
         const data = await response.json();    
         let salida = "";      
-        data.forEach(e => {
-            const {title,image,price,id} = e;
+        data.forEach(producto => {
+            const {title,image,price} = producto;
             salida += `
             <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
                 <img src="${image}" class="card-img-top" alt="${title.toUpperCase()}">
@@ -61,7 +83,7 @@ async function obtenerProductosAPI() {
     } catch (error) {
         document.getElementById("contenido").innerHTML = `
         <div class="alert alert-danger w-75 text-center" role="alert">
-            ¡OCURRIÓ UN ERROR INESPERADO!: <br> ${error}
+        <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${error}
         </div>
         `;
     }
