@@ -3,3 +3,5 @@ document.title = `${obtenerProductoSeleccionado().nombre.toUpperCase()} - Flikit
 renderizarProductoSeleccionado();
 
 mostrarCantidadProductosCarrito();
+
+activarCarritoModal();

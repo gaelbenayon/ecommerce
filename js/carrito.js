@@ -1,7 +1,6 @@
 async function agregarAlCarrito(unidades) {
     let carrito = obtenerCarrito();
     let producto = obtenerProductoSeleccionado();
-    producto.cantidad = 0;
     let productoEnCarrito = carrito.find(e => e.id === producto.id);
     if (productoEnCarrito) {
         let pos = carrito.findIndex(e => e == productoEnCarrito);
@@ -9,6 +8,7 @@ async function agregarAlCarrito(unidades) {
         guardarCarrito(carrito);
         eliminarCantidadProducto(unidades);
     } else {
+        producto.cantidad = 0;
         for (i=0;i<unidades;i++) {
             producto.cantidad++;
         }
@@ -18,6 +18,7 @@ async function agregarAlCarrito(unidades) {
     }
     notificacionAgregadoAlCarrito();
     mostrarCantidadProductosCarrito();
+    activarCarritoModal();
     document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
@@ -31,8 +32,13 @@ function abrirCarrito() {
 
 function activarCarritoModal() {
     const botonCarrito = document.getElementById("botonCarrito");
-    botonCarrito.setAttribute("data-bs-toggle","offcanvas");
-    botonCarrito.setAttribute("data-bs-target","#carritoModal");
+    if (cantidadEnCarrito() > 0) {
+        botonCarrito.setAttribute("data-bs-toggle","offcanvas");
+        botonCarrito.setAttribute("data-bs-target","#carritoModal");
+    } else {
+        botonCarrito.removeAttribute("data-bs-toggle");
+        botonCarrito.removeAttribute("data-bs-target");
+    }
 }
 
 function mostrarCarrito() {
@@ -85,12 +91,14 @@ async function eliminarDelCarrito(id) {
         carrito.splice(posicionCarrito,1);
     }
 
-    if(carrito.length < 1) {
-        let carritoModal = document.getElementById("carritoModal");
-        carritoModal.classList.remove("show");
-    }
-
     guardarCarrito(carrito);
     mostrarCarrito();
-    mostrarCantidadProductosCarrito()
+    mostrarCantidadProductosCarrito();
+    verificarCarritoVacio();
+}
+
+function verificarCarritoVacio() {
+    if(cantidadEnCarrito() < 1) {
+        document.getElementById("carrito").textContent = `Tu carrito está vacío, ¡agregá todos los productos que te gusten!`;
+    }
 }
