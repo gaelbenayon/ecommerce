@@ -1,4 +1,4 @@
-function agregarAlCarrito(unidades) {
+async function agregarAlCarrito(unidades) {
     let carrito = obtenerCarrito();
     let producto = obtenerProductoSeleccionado();
     producto.cantidad = 0;
@@ -18,7 +18,7 @@ function agregarAlCarrito(unidades) {
     }
     notificacionAgregadoAlCarrito();
     mostrarCantidadProductosCarrito();
-    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+    document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
 function mostrarCantidadProductosCarrito() {
@@ -71,9 +71,9 @@ function cantidadEnCarrito() {
     return obtenerCarrito().reduce((ac,producto) => ac + producto.cantidad,0);
 }
 
-function eliminarDelCarrito(id) {
-    let posicionProductos = obtenerProductos().findIndex(e => e.id === id);
-    let productos = obtenerProductos();
+async function eliminarDelCarrito(id) {
+    let productos = await obtenerProductos();
+    let posicionProductos = productos.findIndex(e => e.id === id);
     productos[posicionProductos].cantidad++;
     guardarProductos(productos);
 

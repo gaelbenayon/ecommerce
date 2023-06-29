@@ -2,8 +2,12 @@ function guardarProductos(productos) {
     localStorage.setItem("productos",JSON.stringify(productos));
 }
 
-function obtenerProductos() {
-    return JSON.parse(localStorage.getItem("productos")) || [];
+async function obtenerProductos() {
+    return await new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(JSON.parse(localStorage.getItem("productos")) || []);
+        }, 300);
+    })
 }
 
 function obtenerCarrito() {
@@ -11,7 +15,7 @@ function obtenerCarrito() {
 }
 
 function guardarCarrito(carrito) {
-    localStorage.setItem("carrito",JSON.stringify(carrito));
+    return localStorage.setItem("carrito",JSON.stringify(carrito));
 }
 
 function obtenerProductoSeleccionado() {
@@ -25,19 +29,25 @@ function loader() {
         </div>`;
 }
 
-function delay() {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(true);
-        }, 1000);
-    })
+function mostrarErrorEnDOM(respuesta) {
+    document.getElementById("contenido").innerHTML = `
+        <div class="alert alert-danger w-75 text-center" role="alert">
+            <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${respuesta}
+        </div>
+        `;
 }
 
-function renderizarProductos(filtro) {
+async function renderizarProductos(filtro) {
     loader();
-    delay().then(value => {
-        try {
-            let array = filtro;
+    try {
+        let array = await filtro;
+        if (array.length < 1) {
+            document.getElementById("contenido").innerHTML = `
+            <div class="alert alert-danger w-75 text-center" role="alert">
+                <b>¡NO QUEDAN PRODUCTOS CON STOCK DISPONIBLE!</b>
+            </div>
+            `;
+        } else {
             let salida = "";
             array.forEach(producto => {
                 const {imagen,nombre,precio,id} = producto;
@@ -52,14 +62,10 @@ function renderizarProductos(filtro) {
                 </div>`;
             });
             document.getElementById("contenido").innerHTML = salida;
-        } catch (error) {
-            document.getElementById("contenido").innerHTML = `
-            <div class="alert alert-danger w-75 text-center" role="alert">
-                <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${error}
-            </div>
-            `;
         }
-    })
+    } catch (error) {
+        mostrarErrorEnDOM(error);
+    }
 }
 
 async function obtenerProductosAPI() {
@@ -81,50 +87,51 @@ async function obtenerProductosAPI() {
         })
         document.getElementById("contenido").innerHTML = salida;
     } catch (error) {
-        document.getElementById("contenido").innerHTML = `
-        <div class="alert alert-danger w-75 text-center" role="alert">
-        <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${error}
-        </div>
-        `;
+        mostrarErrorEnDOM(error);
     }
 }
 
-function seleccionarProducto(id) {
-    let productos = obtenerProductos();
+async function seleccionarProducto(id) {
+    let productos = await obtenerProductos();
     let producto = productos.find(e => e.id === id);
     sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
     location.href = "producto.html";
 }
 
-function renderizarProductoSeleccionado() {
-    let producto = obtenerProductoSeleccionado();
-    let {nombre,categoria,precio,imagen} = producto;
-    let salida = `
-    <div class="d-sm-flex col-11 align-items-center">
-        <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
-            <img class="img-fluid" src="${imagen}" alt="${nombre.toUpperCase()}"> 
-        </div>
-        <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 px-2 border">
-            <div class="d-flex text-center flex-column"> 
-                <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
-                <h2>${nombre.toUpperCase()}</h2>
-                <h4 class="text-primary">$${precio}</h4>
-                <h5 class="mt-3 small">CANTIDAD<h/5>
-                <select title="Seleccione la cantidad de unidades para agregar al carrito" id="unidadesProducto">
-                <option selected value="1">1</option>
-                <option value="2">2</option>
-                </select>
-                <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
-                <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 my-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+async function renderizarProductoSeleccionado() {
+    loader();
+    try {
+        let producto = obtenerProductoSeleccionado();
+        let {nombre,categoria,precio,imagen} = producto;
+        let salida = `
+        <div class="d-sm-flex col-11 align-items-center">
+            <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
+                <img class="img-fluid" src="${imagen}" alt="${nombre.toUpperCase()}"> 
             </div>
-        </div>
-    </div>`;
-    document.getElementById("contenido").innerHTML = salida;
-    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+            <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 px-2 border">
+                <div class="d-flex text-center flex-column"> 
+                    <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
+                    <h2>${nombre.toUpperCase()}</h2>
+                    <h4 class="text-primary">$${precio}</h4>
+                    <h5 class="mt-3 small">CANTIDAD<h/5>
+                    <select title="Seleccione la cantidad de unidades para agregar al carrito" id="unidadesProducto">
+                    <option selected value="1">1</option>
+                    <option value="2">2</option>
+                    </select>
+                    <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
+                    <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 my-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                </div>
+            </div>
+        </div>`;
+        document.getElementById("contenido").innerHTML = salida;
+        document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+    } catch (error) {
+        mostrarErrorEnDOM(error);
+    }
 }
 
-function consultarStock() {
-    let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
+async function consultarStock() {
+    let unidadesDisponibles = await obtenerUnidadesDisponiblesSeleccion();
     let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
     if (unidadesDisponibles === 0) {
         notificacionSinStock();
@@ -139,14 +146,14 @@ function obtenerUnidadesSeleccionadas() {
     return parseInt(document.getElementById("unidadesProducto").value);
 }
 
-function obtenerUnidadesDisponiblesSeleccion() {
-    let productos = obtenerProductos();
+async function obtenerUnidadesDisponiblesSeleccion() {
+    let productos = await obtenerProductos();
     let posicion = productos.findIndex(e => e.id == obtenerProductoSeleccionado().id);
     return parseInt(productos[posicion].cantidad);
 }
 
-function eliminarCantidadProducto(cantidad) {
-    let productos = obtenerProductos();
+async function eliminarCantidadProducto(cantidad) {
+    let productos = await obtenerProductos();
     let idProducto = obtenerProductoSeleccionado().id;
     let posicionEnProductos = productos.findIndex(e => e.id === idProducto);
     productos[posicionEnProductos].cantidad -= cantidad;
