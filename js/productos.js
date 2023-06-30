@@ -8,7 +8,7 @@ class Producto {
         this.nombre = nombre;
         this.precio = parseFloat(precio);
         this.cantidad = parseInt(cantidad);
-        this.imagen = `assets/productos/${imagen}`;
+        this.imagen = `./assets/productos/${imagen}`;
         this.guardarEnLS();
     }
 

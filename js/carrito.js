@@ -1,25 +1,26 @@
 async function agregarAlCarrito(unidades) {
     let carrito = obtenerCarrito();
     let producto = obtenerProductoSeleccionado();
+    console.log(await obtenerUnidadesDisponiblesSeleccion());
     let productoEnCarrito = carrito.find(e => e.id === producto.id);
     if (productoEnCarrito) {
         let pos = carrito.findIndex(e => e == productoEnCarrito);
         carrito[pos].cantidad += unidades;
+        await eliminarCantidadProducto(unidades);
         guardarCarrito(carrito);
-        eliminarCantidadProducto(unidades);
     } else {
         producto.cantidad = 0;
         for (i=0;i<unidades;i++) {
             producto.cantidad++;
         }
+        await eliminarCantidadProducto(unidades);
         carrito.push(producto);
         guardarCarrito(carrito);
-        eliminarCantidadProducto(unidades);
     }
+    await mostrarUnidadesDisponiblesSeleccion();
     notificacionAgregadoAlCarrito();
     mostrarCantidadProductosCarrito();
     carritoModal();
-    mostrarUnidadesDisponiblesSeleccion();
 }
 
 function mostrarCantidadProductosCarrito() {
@@ -99,6 +100,8 @@ async function eliminarDelCarrito(id) {
     productos[posicionProductos].cantidad += cantidadProducto;
     guardarProductos(productos);
 
+    mostrarCarrito();
+    mostrarCantidadProductosCarrito();
     verificarCarritoVacio();
 }
 
@@ -111,16 +114,16 @@ async function eliminarUnidadDelCarrito(id) {
     let carrito = obtenerCarrito();
     let posicionCarrito = carrito.findIndex(e => e.id === id);
     carrito[posicionCarrito].cantidad--;
+    guardarCarrito(carrito);
 
     if (carrito[posicionCarrito].cantidad < 1) {
         carrito.splice(posicionCarrito,1);
         guardarCarrito(carrito);
-    } else {
-        guardarCarrito(carrito);
-        mostrarCarrito();
-        mostrarCantidadProductosCarrito();
-        verificarCarritoVacio();
     }
+        
+    mostrarCarrito();
+    mostrarCantidadProductosCarrito();
+    verificarCarritoVacio();
 }
 
 async function agregarUnidadAlCarrito(id) {

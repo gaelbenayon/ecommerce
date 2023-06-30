@@ -27,3 +27,7 @@ const botonCarrito = Array.from(document.getElementsByClassName("botonCarrito"))
 for (let item of botonCarrito) {
     item.onclick = function() {abrirCarrito()};
 }
+
+async function agregar() {
+    await consultarStock();
+}

@@ -22,16 +22,6 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
-// async function obtenerPosicionProductosId(id) {
-//     let productos = await obtenerProductos();
-//     return productos.findIndex(e => e.id === id);
-// }
-
-// function obtenerPosicionCarritoId(id) {
-//     let carrito = obtenerCarrito();
-//     return carrito.findIndex(e => e.id === id);
-// }
-
 function loader() {
     document.getElementById("contenido").innerHTML = `
         <div class="spinner-border text-primary" role="status">
@@ -129,7 +119,7 @@ function renderizarProductoSeleccionado() {
                     <option value="2">2</option>
                     </select>
                     <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
-                    <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 mt-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                    <button onclick="agregar()" class="btn btn-primary consultarStock d-block m-auto w-50 mt-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
                 </div>
             </div>
         </div>`;
@@ -142,13 +132,14 @@ function renderizarProductoSeleccionado() {
 
 async function consultarStock() {
     let unidadesDisponibles = await obtenerUnidadesDisponiblesSeleccion();
+    console.log(unidadesDisponibles);
     let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
     if (unidadesDisponibles === 0) {
         notificacionSinStock();
     } else if (unidadesDisponibles < unidadesSeleccionadas) {
         notificacionStockInsuficiente();
     } else {
-        agregarAlCarrito(unidadesSeleccionadas);
+        await agregarAlCarrito(unidadesSeleccionadas);
     }
 }
 
