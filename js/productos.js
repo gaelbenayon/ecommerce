@@ -2,7 +2,6 @@ const productos = [];
 
 class Producto {
     constructor(categoria,nombre,precio,cantidad,imagen) {
-        // this.id = obtenerProductos().length + 1;
         this.id = productos.length + 1;
         this.categoria = categoria;
         this.nombre = nombre;
@@ -18,20 +17,14 @@ class Producto {
             guardarProductos(productos);
         } else {
             console.error("No se agregó el producto porque se ingresaron datos inválidos");
-            console.error("Por favor, introduzca los datos de manera correcta");
         }
     }
 }
 
-async function agregarProductos() {
-    let productos = await obtenerProductos();
-    if (productos.length < 1) {
-        new Producto("budines","budin de limon",1500,3,"budinLimon.png");
-        new Producto("budines","budin marmolado",1700,0,"budinMarmolado.png");
-        new Producto("budines","budin de naranja",1600,1,"budinNaranja.png");
-        new Producto("tortas","chocotorta",4500,1,"chocotorta.png");
-        new Producto("tortas","torta de coco y dulce de leche",3200,2,"tortaCoco.png");
-    }
+if (obtenerProductos().length < 1) {
+    new Producto("budines","budin de limon",1500,3,"budinLimon.png");
+    new Producto("budines","budin marmolado",1700,0,"budinMarmolado.png");
+    new Producto("budines","budin de naranja",1600,1,"budinNaranja.png");
+    new Producto("tortas","chocotorta",4500,4,"chocotorta.png");
+    new Producto("tortas","torta de coco y dulce de leche",3200,2,"tortaCoco.png");
 }
-
-agregarProductos();

@@ -2,12 +2,8 @@ function guardarProductos(productos) {
     localStorage.setItem("productos",JSON.stringify(productos));
 }
 
-async function obtenerProductos() {
-    return await new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(JSON.parse(localStorage.getItem("productos")) || []);
-        }, 300);
-    })
+function obtenerProductos() {
+    return JSON.parse(localStorage.getItem("productos")) || [];
 }
 
 function obtenerCarrito() {
@@ -22,11 +18,16 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
-function loader() {
+function loader(array) {
     document.getElementById("contenido").innerHTML = `
         <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Cargando...</span>
         </div>`;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(array);
+        }, 500);
+    })
 }
 
 function mostrarErrorEnDOM(respuesta) {
@@ -38,9 +39,8 @@ function mostrarErrorEnDOM(respuesta) {
 }
 
 async function renderizarProductos(filtro) {
-    loader();
+    let array = await loader(filtro);
     try {
-        let array = await filtro;
         if (array.length < 1) {
             document.getElementById("contenido").innerHTML = `
             <div class="alert alert-danger w-75 text-center" role="alert">
@@ -65,11 +65,12 @@ async function renderizarProductos(filtro) {
         }
     } catch (error) {
         mostrarErrorEnDOM(error);
+        console.log(error);
     }
 }
 
 async function obtenerProductosAPI() {
-    loader();
+    await loader(null);
     try {
         const response = await fetch('https://fakestoreapi.com/products/?limit=5');
         const data = await response.json();    
@@ -91,15 +92,15 @@ async function obtenerProductosAPI() {
     }
 }
 
-async function seleccionarProducto(id) {
-    let productos = await obtenerProductos();
+function seleccionarProducto(id) {
+    let productos = obtenerProductos();
     let producto = productos.find(e => e.id === id);
     sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
     location.href = "producto.html";
 }
 
-function renderizarProductoSeleccionado() {
-    loader();
+async function renderizarProductoSeleccionado() {
+    await loader(null);
     try {
         let producto = obtenerProductoSeleccionado();
         let {nombre,categoria,precio,imagen} = producto;
@@ -119,7 +120,7 @@ function renderizarProductoSeleccionado() {
                     <option value="2">2</option>
                     </select>
                     <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
-                    <button onclick="agregar()" class="btn btn-primary consultarStock d-block m-auto w-50 mt-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                    <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 mt-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
                 </div>
             </div>
         </div>`;
@@ -130,16 +131,15 @@ function renderizarProductoSeleccionado() {
     }
 }
 
-async function consultarStock() {
-    let unidadesDisponibles = await obtenerUnidadesDisponiblesSeleccion();
-    console.log(unidadesDisponibles);
+function consultarStock() {
+    let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
     let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
     if (unidadesDisponibles === 0) {
         notificacionSinStock();
     } else if (unidadesDisponibles < unidadesSeleccionadas) {
         notificacionStockInsuficiente();
     } else {
-        await agregarAlCarrito(unidadesSeleccionadas);
+        agregarAlCarrito(unidadesSeleccionadas);
     }
 }
 
@@ -147,18 +147,18 @@ function obtenerUnidadesSeleccionadas() {
     return parseInt(document.getElementById("unidadesProducto").value);
 }
 
-async function obtenerUnidadesDisponiblesSeleccion() {
-    let productos = await obtenerProductos();
+function obtenerUnidadesDisponiblesSeleccion() {
+    let productos = obtenerProductos();
     let posicion = productos.findIndex(e => e.id == obtenerProductoSeleccionado().id);
     return parseInt(productos[posicion].cantidad);
 }
 
-async function mostrarUnidadesDisponiblesSeleccion() {
-    document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+function mostrarUnidadesDisponiblesSeleccion() {
+    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
 }
 
-async function eliminarCantidadProducto(cantidad) {
-    let productos = await obtenerProductos();
+function eliminarCantidadProducto(cantidad) {
+    let productos = obtenerProductos();
     let posicionEnProductos = productos.findIndex(e => e.id === obtenerProductoSeleccionado().id);
     productos[posicionEnProductos].cantidad -= cantidad;
     guardarProductos(productos);
