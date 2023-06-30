@@ -22,6 +22,16 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
+// async function obtenerPosicionProductosId(id) {
+//     let productos = await obtenerProductos();
+//     return productos.findIndex(e => e.id === id);
+// }
+
+// function obtenerPosicionCarritoId(id) {
+//     let carrito = obtenerCarrito();
+//     return carrito.findIndex(e => e.id === id);
+// }
+
 function loader() {
     document.getElementById("contenido").innerHTML = `
         <div class="spinner-border text-primary" role="status">
@@ -57,7 +67,7 @@ async function renderizarProductos(filtro) {
                     <div class="card-body text-start">
                         <h3 class="card-title text-primary text-start">$${precio}</h3>
                         <p class="card-text">${nombre.toUpperCase()}</p>
-                        <button onclick="seleccionarProducto(${id})" class="btn btn-primary w-100">Ver Producto</button>
+                        <button onclick="seleccionarProducto(${id})" class="btn btn-primary w-100 mt-2">Ver Producto</button>
                     </div>
                 </div>`;
             });
@@ -98,7 +108,7 @@ async function seleccionarProducto(id) {
     location.href = "producto.html";
 }
 
-async function renderizarProductoSeleccionado() {
+function renderizarProductoSeleccionado() {
     loader();
     try {
         let producto = obtenerProductoSeleccionado();
@@ -108,7 +118,7 @@ async function renderizarProductoSeleccionado() {
             <div class="col-12 col-sm-5 col-md-6 col-lg-5"> 
                 <img class="img-fluid" src="${imagen}" alt="${nombre.toUpperCase()}"> 
             </div>
-            <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-5 px-2 border">
+            <div class="col-12 col-sm-7 col-md-6 col-lg-7 pt-1 pt-sm-0 px-2">
                 <div class="d-flex text-center flex-column"> 
                     <button class="btn" onclick="renderizarProductos(${categoria})">${categoria.toUpperCase()}</button>
                     <h2>${nombre.toUpperCase()}</h2>
@@ -119,12 +129,12 @@ async function renderizarProductoSeleccionado() {
                     <option value="2">2</option>
                     </select>
                     <p id="unidadesDisponibles" class="mt-3 text-muted small"></p>
-                    <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 my-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
+                    <button onclick="consultarStock()" class="btn btn-primary d-block m-auto w-50 mt-4"><i class="fa-solid fa-cart-shopping me-2"></i>AGREGAR</button>
                 </div>
             </div>
         </div>`;
         document.getElementById("contenido").innerHTML = salida;
-        document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+        mostrarUnidadesDisponiblesSeleccion();
     } catch (error) {
         mostrarErrorEnDOM(error);
     }
@@ -152,10 +162,13 @@ async function obtenerUnidadesDisponiblesSeleccion() {
     return parseInt(productos[posicion].cantidad);
 }
 
+async function mostrarUnidadesDisponiblesSeleccion() {
+    document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+}
+
 async function eliminarCantidadProducto(cantidad) {
     let productos = await obtenerProductos();
-    let idProducto = obtenerProductoSeleccionado().id;
-    let posicionEnProductos = productos.findIndex(e => e.id === idProducto);
+    let posicionEnProductos = productos.findIndex(e => e.id === obtenerProductoSeleccionado().id);
     productos[posicionEnProductos].cantidad -= cantidad;
     guardarProductos(productos);
 }

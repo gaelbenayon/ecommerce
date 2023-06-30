@@ -18,8 +18,8 @@ async function agregarAlCarrito(unidades) {
     }
     notificacionAgregadoAlCarrito();
     mostrarCantidadProductosCarrito();
-    activarCarritoModal();
-    document.getElementById("unidadesDisponibles").innerHTML = `${await obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+    carritoModal();
+    mostrarUnidadesDisponiblesSeleccion();
 }
 
 function mostrarCantidadProductosCarrito() {
@@ -30,7 +30,7 @@ function abrirCarrito() {
     cantidadEnCarrito() > 0 ? mostrarCarrito() : notificacionCarritoVacio();
 }
 
-function activarCarritoModal() {
+function carritoModal() {
     const botonCarrito = document.getElementById("botonCarrito");
     if (cantidadEnCarrito() > 0) {
         botonCarrito.setAttribute("data-bs-toggle","offcanvas");
@@ -42,7 +42,7 @@ function activarCarritoModal() {
 }
 
 function mostrarCarrito() {
-    activarCarritoModal();
+    carritoModal();
     let salida = '<div class="row my-3 d-flex align-items-center">';
     obtenerCarrito().forEach(producto => {
         const {id,nombre,precio,cantidad,imagen} = producto;
@@ -52,8 +52,16 @@ function mostrarCarrito() {
                 <img src="${imagen}" class="rounded" width="100%">
             </div>
             <div class="col-6 text-center">
-                <p>${nombre.toUpperCase()}</p>
-                <p class="text-primary">${cantidad} x <b>$${precio}</b></p>
+                <p class="pb-2">${nombre.toUpperCase()}</p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn" onclick="eliminarUnidadDelCarrito(${id})">
+                        <i class="fa-solid fa-circle-minus"></i>
+                    </button>
+                    <p class="text-primary">${cantidad} x <b>$${precio}</b></p>
+                    <button class="btn" onclick="agregarUnidadAlCarrito(${id})">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </button>
+                </div>
             </div>
             <div class="col-2">
                 <button class="btn" onclick="eliminarDelCarrito(${id})">
@@ -78,27 +86,62 @@ function cantidadEnCarrito() {
 }
 
 async function eliminarDelCarrito(id) {
+    let carrito = obtenerCarrito();
+    let producto = carrito.find(e => e.id === id);
+    let posicionCarrito = carrito.findIndex(e => e === producto);
+    carrito.splice(posicionCarrito,1);
+    guardarCarrito(carrito);
+
+    let cantidadProducto = producto.cantidad;
+    
+    let productos = await obtenerProductos();
+    let posicionProductos = productos.findIndex(e => e.id === id);
+    productos[posicionProductos].cantidad += cantidadProducto;
+    guardarProductos(productos);
+
+    verificarCarritoVacio();
+}
+
+async function eliminarUnidadDelCarrito(id) {
     let productos = await obtenerProductos();
     let posicionProductos = productos.findIndex(e => e.id === id);
     productos[posicionProductos].cantidad++;
     guardarProductos(productos);
 
-    let posicionCarrito = obtenerCarrito().findIndex(e => e.id === id);
     let carrito = obtenerCarrito();
+    let posicionCarrito = carrito.findIndex(e => e.id === id);
     carrito[posicionCarrito].cantidad--;
 
     if (carrito[posicionCarrito].cantidad < 1) {
         carrito.splice(posicionCarrito,1);
+        guardarCarrito(carrito);
+    } else {
+        guardarCarrito(carrito);
+        mostrarCarrito();
+        mostrarCantidadProductosCarrito();
+        verificarCarritoVacio();
     }
+}
 
-    guardarCarrito(carrito);
-    mostrarCarrito();
-    mostrarCantidadProductosCarrito();
-    verificarCarritoVacio();
+async function agregarUnidadAlCarrito(id) {
+    let productos = await obtenerProductos();
+    let posicionProductos = productos.findIndex(e => e.id === id);
+    if (productos[posicionProductos].cantidad > 0) {
+        productos[posicionProductos].cantidad--;
+        let carrito = obtenerCarrito();
+        let posicionCarrito = carrito.findIndex(e => e.id === id);
+        carrito[posicionCarrito].cantidad++;
+        
+        guardarProductos(productos);
+        guardarCarrito(carrito);
+        mostrarCarrito();
+        mostrarCantidadProductosCarrito();
+    } else {notificacionStockInsuficiente()}
 }
 
 function verificarCarritoVacio() {
     if(cantidadEnCarrito() < 1) {
         document.getElementById("carrito").textContent = `Tu carrito está vacío, ¡agregá todos los productos que te gusten!`;
+        carritoModal();
     }
 }

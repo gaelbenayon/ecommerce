@@ -4,4 +4,4 @@ mostrarCantidadProductosCarrito();
 
 renderizarProductos(productosDisponibles());
 
-activarCarritoModal();
+carritoModal();

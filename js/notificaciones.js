@@ -29,12 +29,7 @@ function notificacionSinStock() {
 }
 
 async function notificacionStockInsuficiente() {
-    let mensaje = "";
-    if (await obtenerUnidadesDisponiblesSeleccion() > 1) {
-        mensaje = "unidades disponibles";
-    } else {
-        mensaje = "unidad disponible";
-    }
+    let mensaje = await obtenerUnidadesDisponiblesSeleccion() > 1 ? "unidades disponibles" : "unidad disponible";
     Toastify({
         text: `No hay stock suficiente para su selección, hay ${await obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`,
         duration: 3000,
