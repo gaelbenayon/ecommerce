@@ -29,7 +29,7 @@ function notificacionSinStock() {
 }
 
 function notificacionStockInsuficiente() {
-    let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 ? "unidades disponibles" : "unidad disponible";
+    let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 || obtenerUnidadesDisponiblesSeleccion() == 0 ? "unidades disponibles" : "unidad disponible";
     Toastify({
         text: `No hay stock suficiente para su selección, hay ${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`,
         duration: 3000,

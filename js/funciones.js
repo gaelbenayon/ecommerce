@@ -30,6 +30,24 @@ function loader(array) {
     })
 }
 
+function filtrarProductosRepetidos(array) {
+    let productos = obtenerProductos();
+
+    let idCoincidencias = [];
+    for (item of array) {
+        if (!idCoincidencias.includes(item.id)) {idCoincidencias.push(item.id);}
+    }
+
+    let coincidenciasFiltradas = [];
+    for (id of idCoincidencias) {
+        let posicion = productos.findIndex(e => e.id === id);
+        let producto = productos[posicion];
+        coincidenciasFiltradas.push(producto);
+    }
+
+    return coincidenciasFiltradas;
+}
+
 function mostrarErrorEnDOM(respuesta) {
     document.getElementById("contenido").innerHTML = `
         <div class="alert alert-danger w-75 text-center" role="alert">
@@ -134,6 +152,7 @@ async function renderizarProductoSeleccionado() {
 function consultarStock() {
     let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
     let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
+
     if (unidadesDisponibles === 0) {
         notificacionSinStock();
     } else if (unidadesDisponibles < unidadesSeleccionadas) {
@@ -154,7 +173,8 @@ function obtenerUnidadesDisponiblesSeleccion() {
 }
 
 function mostrarUnidadesDisponiblesSeleccion() {
-    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} UNIDADES DISPONIBLES`;
+    let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 || obtenerUnidadesDisponiblesSeleccion() == 0 ? "UNIDADES DISPONIBLES" : "UNIDAD DISPONIBLE";
+    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`;
 }
 
 function eliminarCantidadProducto(cantidad) {

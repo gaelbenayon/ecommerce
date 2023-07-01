@@ -6,17 +6,15 @@ function agregarAlCarrito(unidades) {
     if (productoEnCarrito) {
         let posicion = carrito.findIndex(e => e == productoEnCarrito);
         carrito[posicion].cantidad += unidades;
-        guardarCarrito(carrito);
-        eliminarCantidadProducto(unidades);
     } else {
         producto.cantidad = 0;
         for (i=0;i<unidades;i++) {
             producto.cantidad++;
         }
-        eliminarCantidadProducto(unidades);
         carrito.push(producto);
-        guardarCarrito(carrito);
     }
+    guardarCarrito(carrito);
+    eliminarCantidadProducto(unidades);
 
     mostrarUnidadesDisponiblesSeleccion();
     notificacionAgregadoAlCarrito();
@@ -29,7 +27,7 @@ function mostrarCantidadProductosCarrito() {
 }
 
 function abrirCarrito() {
-    cantidadEnCarrito() > 0 ? mostrarCarrito() : notificacionCarritoVacio();
+    cantidadEnCarrito() > 0 ? renderizarCarrito() : notificacionCarritoVacio();
     carritoModal();
 }
 
@@ -45,7 +43,7 @@ function carritoModal() {
     }
 }
 
-function mostrarCarrito() {
+function renderizarCarrito() {
     let salida = '<div class="row my-3 d-flex align-items-center">';
     obtenerCarrito().forEach(producto => {
         const {id,nombre,precio,cantidad,imagen} = producto;
@@ -95,15 +93,13 @@ function eliminarDelCarrito(id) {
     carrito.splice(posicionCarrito,1);
     guardarCarrito(carrito);
 
-    let cantidadProducto = producto.cantidad;
-    
     let productos = obtenerProductos();
     let posicionProductos = productos.findIndex(e => e.id === id);
-    productos[posicionProductos].cantidad += cantidadProducto;
+    productos[posicionProductos].cantidad += producto.cantidad;
     guardarProductos(productos);
 
-    mostrarCarrito();
     mostrarCantidadProductosCarrito();
+    renderizarCarrito();
     carritoModal();
 }
 
@@ -116,14 +112,13 @@ function eliminarUnidadDelCarrito(id) {
     let carrito = obtenerCarrito();
     let posicionCarrito = carrito.findIndex(e => e.id === id);
     carrito[posicionCarrito].cantidad--;
-    guardarCarrito(carrito);
 
     if (carrito[posicionCarrito].cantidad < 1) {
         carrito.splice(posicionCarrito,1);
-        guardarCarrito(carrito);
     }
+    guardarCarrito(carrito);
         
-    mostrarCarrito();
+    renderizarCarrito();
     mostrarCantidadProductosCarrito();
     carritoModal();
 }
@@ -140,7 +135,7 @@ function agregarUnidadAlCarrito(id) {
         carrito[posicionCarrito].cantidad++;
         guardarCarrito(carrito);
         
-        mostrarCarrito();
+        renderizarCarrito();
         mostrarCantidadProductosCarrito();
     } else {notificacionStockInsuficiente()}
 }
