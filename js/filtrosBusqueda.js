@@ -29,3 +29,15 @@ function filtrarBuscador() {
         mostrarErrorEnDOM(error);
     }
 }
+
+//FILTROS - ORDEN
+
+function ordenarPrecioAscendente() {
+    let productos = productosDisponibles();
+    return productos.sort((a, b) => a.precio - b.precio);
+}
+
+function ordenarPrecioDescendente() {
+    let productos = ordenarPrecioAscendente();
+    return productos.sort((b, a) => a.precio - b.precio);
+}
