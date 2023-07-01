@@ -18,6 +18,14 @@ function obtenerProductoSeleccionado() {
     return JSON.parse(sessionStorage.getItem("productoSeleccionado"));
 }
 
+function guardarArrayActual(array) {
+    return localStorage.setItem("arrayActual",JSON.stringify(array));
+}
+
+function obtenerArrayActual() {
+    return JSON.parse(localStorage.getItem("arrayActual"));
+}
+
 function loader(array) {
     document.getElementById("contenido").innerHTML = `
         <div class="spinner-border text-primary" role="status">

@@ -2,6 +2,9 @@ const productosDisponibles = function() {
     let productos = obtenerProductos();
     return productos.filter(e => e.cantidad > 0);
 }
+
+guardarArrayActual(productosDisponibles());
+
 const budines = function() {
     let productos = obtenerProductos();
     return productos.filter(e => e.categoria === "budines");
@@ -32,12 +35,11 @@ function filtrarBuscador() {
 
 //FILTROS - ORDEN
 
-function ordenarPrecioAscendente() {
-    let productos = productosDisponibles();
-    return productos.sort((a, b) => a.precio - b.precio);
+function ordenarPrecioAscendente(array) {
+    return array.sort((a, b) => a.precio - b.precio);
 }
 
-function ordenarPrecioDescendente() {
-    let productos = ordenarPrecioAscendente();
+function ordenarPrecioDescendente(array) {
+    let productos = ordenarPrecioAscendente(array);
     return productos.sort((b, a) => a.precio - b.precio);
 }
