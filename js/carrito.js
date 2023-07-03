@@ -1,34 +1,13 @@
-function agregarAlCarrito(unidades) {
-    let carrito = obtenerCarrito();
-    let producto = obtenerProductoSeleccionado();
-    let productoEnCarrito = carrito.find(e => e.id === producto.id);
+function calcularTotalCarrito() {
+    return obtenerCarrito().reduce((ac,producto) => ac + (producto.precio * producto.cantidad),0);
+}
 
-    if (productoEnCarrito) {
-        let posicion = carrito.findIndex(e => e == productoEnCarrito);
-        carrito[posicion].cantidad += unidades;
-    } else {
-        producto.cantidad = 0;
-        for (i=0;i<unidades;i++) {
-            producto.cantidad++;
-        }
-        carrito.push(producto);
-    }
-    guardarCarrito(carrito);
-    eliminarCantidadProducto(unidades);
-
-    mostrarUnidadesDisponiblesSeleccion();
-    notificacionAgregadoAlCarrito();
-    mostrarCantidadProductosCarrito();
-    abrirCarrito();
+function cantidadEnCarrito() {
+    return obtenerCarrito().reduce((ac,producto) => ac + producto.cantidad,0);
 }
 
 function mostrarCantidadProductosCarrito() {
     document.getElementById("carritoCantidad").innerHTML = cantidadEnCarrito();
-}
-
-function abrirCarrito() {
-    cantidadEnCarrito() > 0 ? renderizarCarrito() : notificacionCarritoVacio();
-    carritoModal();
 }
 
 function carritoModal() {
@@ -78,12 +57,33 @@ function renderizarCarrito() {
     document.getElementById("carrito").innerHTML = salida;
 }
 
-function calcularTotalCarrito() {
-    return obtenerCarrito().reduce((ac,producto) => ac + (producto.precio * producto.cantidad),0);
+function abrirCarrito() {
+    cantidadEnCarrito() > 0 ? renderizarCarrito() : notificacionCarritoVacio();
+    carritoModal();
 }
 
-function cantidadEnCarrito() {
-    return obtenerCarrito().reduce((ac,producto) => ac + producto.cantidad,0);
+function agregarAlCarrito(unidades) {
+    let carrito = obtenerCarrito();
+    let producto = obtenerProductoSeleccionado();
+    let productoEnCarrito = carrito.find(e => e.id === producto.id);
+
+    if (productoEnCarrito) {
+        let posicion = carrito.findIndex(e => e == productoEnCarrito);
+        carrito[posicion].cantidad += unidades;
+    } else {
+        producto.cantidad = 0;
+        for (i=0;i<unidades;i++) {
+            producto.cantidad++;
+        }
+        carrito.push(producto);
+    }
+    guardarCarrito(carrito);
+    eliminarCantidadProducto(unidades);
+
+    mostrarUnidadesDisponiblesSeleccion();
+    notificacionAgregadoAlCarrito();
+    mostrarCantidadProductosCarrito();
+    abrirCarrito();
 }
 
 function eliminarDelCarrito(id) {

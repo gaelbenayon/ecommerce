@@ -149,19 +149,6 @@ async function renderizarProductoSeleccionado() {
     }
 }
 
-function consultarStock() {
-    let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
-    let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
-
-    if (unidadesDisponibles === 0) {
-        notificacionSinStock();
-    } else if (unidadesDisponibles < unidadesSeleccionadas) {
-        notificacionStockInsuficiente();
-    } else {
-        agregarAlCarrito(unidadesSeleccionadas);
-    }
-}
-
 function obtenerUnidadesSeleccionadas() {
     return parseInt(document.getElementById("unidadesProducto").value);
 }
@@ -177,6 +164,19 @@ function mostrarUnidadesDisponiblesSeleccion() {
     if (campoUnidades) {
         let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 || obtenerUnidadesDisponiblesSeleccion() == 0 ? "UNIDADES DISPONIBLES" : "UNIDAD DISPONIBLE";
         campoUnidades.innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`;
+    }
+}
+
+function consultarStock() {
+    let unidadesDisponibles = obtenerUnidadesDisponiblesSeleccion();
+    let unidadesSeleccionadas = obtenerUnidadesSeleccionadas();
+
+    if (unidadesDisponibles === 0) {
+        notificacionSinStock();
+    } else if (unidadesDisponibles < unidadesSeleccionadas) {
+        notificacionStockInsuficiente();
+    } else {
+        agregarAlCarrito(unidadesSeleccionadas);
     }
 }
 
