@@ -29,7 +29,11 @@ for (let torta of filtroTortas) {
 
 const filtroAPI = Array.from(document.getElementsByClassName("otrosProductos"));
 for (let item of filtroAPI) {
-    item.onclick = function() {obtenerProductosAPI()};
+    item.onclick = async function() {
+        await loader(null);
+        guardarArrayActual(await obtenerProductosAPI());
+        renderizarProductosAPI();
+    };
 } 
 
 const botonCarrito = Array.from(document.getElementsByClassName("botonCarrito"));

@@ -99,6 +99,7 @@ function eliminarDelCarrito(id) {
     guardarProductos(productos);
 
     mostrarCantidadProductosCarrito();
+    mostrarUnidadesDisponiblesSeleccion();
     renderizarCarrito();
     carritoModal();
 }
@@ -120,6 +121,7 @@ function eliminarUnidadDelCarrito(id) {
         
     renderizarCarrito();
     mostrarCantidadProductosCarrito();
+    mostrarUnidadesDisponiblesSeleccion();
     carritoModal();
 }
 
@@ -137,5 +139,6 @@ function agregarUnidadAlCarrito(id) {
         
         renderizarCarrito();
         mostrarCantidadProductosCarrito();
+        mostrarUnidadesDisponiblesSeleccion();
     } else {notificacionStockInsuficiente()}
 }

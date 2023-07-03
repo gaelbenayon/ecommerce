@@ -26,6 +26,18 @@ function obtenerArrayActual() {
     return JSON.parse(localStorage.getItem("arrayActual"));
 }
 
+async function obtenerProductosAPI() {
+    const response = await fetch('https://fakestoreapi.com/products/?limit=5');
+    return await response.json(); 
+}
+
+function seleccionarProducto(id) {
+    let productos = obtenerProductos();
+    let producto = productos.find(e => e.id === id);
+    sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
+    location.href = "producto.html";
+}
+
 function loader(array) {
     document.getElementById("contenido").innerHTML = `
         <div class="spinner-border text-primary" role="status">
@@ -38,30 +50,13 @@ function loader(array) {
     })
 }
 
-function filtrarProductosRepetidos(array) {
-    let productos = obtenerProductos();
-
-    let idCoincidencias = [];
-    for (item of array) {
-        if (!idCoincidencias.includes(item.id)) {idCoincidencias.push(item.id);}
-    }
-
-    let coincidenciasFiltradas = [];
-    for (id of idCoincidencias) {
-        let posicion = productos.findIndex(e => e.id === id);
-        let producto = productos[posicion];
-        coincidenciasFiltradas.push(producto);
-    }
-
-    return coincidenciasFiltradas;
-}
-
 function mostrarErrorEnDOM(respuesta) {
     document.getElementById("contenido").innerHTML = `
         <div class="alert alert-danger w-75 text-center" role="alert">
             <b>¡OCURRIÓ UN ERROR INESPERADO!</b> <br> ${respuesta}
         </div>
         `;
+        console.error(respuesta);
 }
 
 async function renderizarProductos(filtro) {
@@ -76,7 +71,13 @@ async function renderizarProductos(filtro) {
         } else {
             let salida = "";
             array.forEach(producto => {
-                const {imagen,nombre,precio,id} = producto;
+                let {imagen,nombre,precio,id} = producto;
+                if (!imagen || !nombre || !precio) {
+                    const {image, title, price} = producto;
+                    imagen = image;
+                    nombre = title;
+                    precio = price;
+                }
                 salida += `
                 <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
                     <img src="${imagen}" class="card-img-top" alt="${nombre.toUpperCase()}">
@@ -91,17 +92,14 @@ async function renderizarProductos(filtro) {
         }
     } catch (error) {
         mostrarErrorEnDOM(error);
-        console.log(error);
     }
 }
 
-async function obtenerProductosAPI() {
-    await loader(null);
+async function renderizarProductosAPI() {
     try {
-        const response = await fetch('https://fakestoreapi.com/products/?limit=5');
-        const data = await response.json();    
-        let salida = "";      
-        data.forEach(producto => {
+        let productos = await obtenerProductosAPI();           
+        let salida = '<h3 class="text-primary text-center text-uppercase">Llegando a la Argentina próximamente</h3>';      
+        productos.forEach(producto => {
             const {title,image,price} = producto;
             salida += `
             <div class="card col-11 col-sm-5 col-md-4 col-lg-3">
@@ -116,13 +114,6 @@ async function obtenerProductosAPI() {
     } catch (error) {
         mostrarErrorEnDOM(error);
     }
-}
-
-function seleccionarProducto(id) {
-    let productos = obtenerProductos();
-    let producto = productos.find(e => e.id === id);
-    sessionStorage.setItem("productoSeleccionado",JSON.stringify(producto));
-    location.href = "producto.html";
 }
 
 async function renderizarProductoSeleccionado() {
@@ -181,8 +172,11 @@ function obtenerUnidadesDisponiblesSeleccion() {
 }
 
 function mostrarUnidadesDisponiblesSeleccion() {
-    let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 || obtenerUnidadesDisponiblesSeleccion() == 0 ? "UNIDADES DISPONIBLES" : "UNIDAD DISPONIBLE";
-    document.getElementById("unidadesDisponibles").innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`;
+    let campoUnidades = document.getElementById("unidadesDisponibles");
+    if (campoUnidades) {
+        let mensaje = obtenerUnidadesDisponiblesSeleccion() > 1 || obtenerUnidadesDisponiblesSeleccion() == 0 ? "UNIDADES DISPONIBLES" : "UNIDAD DISPONIBLE";
+        campoUnidades.innerHTML = `${obtenerUnidadesDisponiblesSeleccion()} ${mensaje}`;
+    }
 }
 
 function eliminarCantidadProducto(cantidad) {
