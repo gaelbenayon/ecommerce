@@ -53,6 +53,7 @@ function filtrarBuscador() {
 }
 
 //FILTROS - ORDEN
+//Se verifica si tiene la propiedad para determinar si es un producto local o de la API
 
 function ordenarPrecioAscendente(array) {
     if (array[0].hasOwnProperty("precio")) {

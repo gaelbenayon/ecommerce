@@ -72,6 +72,7 @@ async function renderizarProductos(filtro) {
             let salida = "";
             array.forEach(producto => {
                 let {imagen,nombre,precio,id} = producto;
+                //Si no se encuentran las variables, se trata de un producto de la API, que tiene otras propiedades
                 if (!imagen || !nombre || !precio) {
                     const {image, title, price} = producto;
                     imagen = image;
